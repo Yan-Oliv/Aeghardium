@@ -1,0 +1,144 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/ClassSelectionController.gd" id="1"]
+
+[node name="ClassSelectionScreen" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1")
+
+[node name="Background" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="Sky" type="ColorRect" parent="Background"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0.04, 0.07, 0.08, 1)
+
+[node name="Mist" type="ColorRect" parent="Background"]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_top = -260.0
+color = Color(0.23, 0.31, 0.25, 0.14)
+
+[node name="Roots" type="ColorRect" parent="Background"]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_top = -120.0
+color = Color(0.09, 0.08, 0.07, 0.95)
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_top = 20
+theme_override_constants/margin_right = 20
+theme_override_constants/margin_bottom = 20
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 14
+
+[node name="LeftPanel" type="PanelContainer" parent="MarginContainer/HBoxContainer"]
+layout_mode = 2
+custom_minimum_size = Vector2(280, 0)
+size_flags_horizontal = 1
+
+[node name="LeftVBox" type="VBoxContainer" parent="MarginContainer/HBoxContainer/LeftPanel"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="ListTitle" type="Label" parent="MarginContainer/HBoxContainer/LeftPanel/LeftVBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "Classes Despertas"
+
+[node name="ListHint" type="Label" parent="MarginContainer/HBoxContainer/LeftPanel/LeftVBox"]
+layout_mode = 2
+autowrap_mode = 3
+text = "Escolha um arquétipo para iniciar sua jornada."
+
+[node name="ClassList" type="ItemList" parent="MarginContainer/HBoxContainer/LeftPanel/LeftVBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+same_column_width = true
+fixed_icon_size = Vector2i(0, 0)
+
+[node name="DetailsPanel" type="PanelContainer" parent="MarginContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/HBoxContainer/DetailsPanel"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="Header" type="HBoxContainer" parent="MarginContainer/HBoxContainer/DetailsPanel/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="IconPanel" type="PanelContainer" parent="MarginContainer/HBoxContainer/DetailsPanel/VBoxContainer/Header"]
+layout_mode = 2
+custom_minimum_size = Vector2(120, 120)
+
+[node name="IconLabel" type="Label" parent="MarginContainer/HBoxContainer/DetailsPanel/VBoxContainer/Header/IconPanel"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 46
+text = "SWD"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="HeaderText" type="VBoxContainer" parent="MarginContainer/HBoxContainer/DetailsPanel/VBoxContainer/Header"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 8
+
+[node name="NameLabel" type="Label" parent="MarginContainer/HBoxContainer/DetailsPanel/VBoxContainer/Header/HeaderText"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 28
+text = "Classe"
+
+[node name="RoleLabel" type="Label" parent="MarginContainer/HBoxContainer/DetailsPanel/VBoxContainer/Header/HeaderText"]
+layout_mode = 2
+autowrap_mode = 3
+text = "Arquétipo"
+
+[node name="DetailsLabel" type="RichTextLabel" parent="MarginContainer/HBoxContainer/DetailsPanel/VBoxContainer"]
+layout_mode = 2
+bbcode_enabled = true
+fit_content = false
+scroll_active = true
+size_flags_vertical = 3
+
+[node name="Buttons" type="HBoxContainer" parent="MarginContainer/HBoxContainer/DetailsPanel/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="BackButton" type="Button" parent="MarginContainer/HBoxContainer/DetailsPanel/VBoxContainer/Buttons"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Voltar"
+
+[node name="ConfirmButton" type="Button" parent="MarginContainer/HBoxContainer/DetailsPanel/VBoxContainer/Buttons"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Prosseguir"
+
+[connection signal="item_selected" from="MarginContainer/HBoxContainer/LeftPanel/LeftVBox/ClassList" to="." method="_on_class_list_item_selected"]
+[connection signal="pressed" from="MarginContainer/HBoxContainer/DetailsPanel/VBoxContainer/Buttons/BackButton" to="." method="_on_back_button_pressed"]
+[connection signal="pressed" from="MarginContainer/HBoxContainer/DetailsPanel/VBoxContainer/Buttons/ConfirmButton" to="." method="_on_confirm_button_pressed"]

@@ -1,0 +1,172 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/TitleScreenController.gd" id="1"]
+
+[node name="TitleScreen" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1")
+
+[node name="Background" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="Sky" type="ColorRect" parent="Background"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0.03, 0.04, 0.07, 1)
+
+[node name="MoonGlow" type="ColorRect" parent="Background"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.34
+anchor_top = 0.06
+anchor_right = 0.66
+anchor_bottom = 0.40
+color = Color(0.29, 0.34, 0.26, 0.16)
+
+[node name="ColossusTrunk" type="ColorRect" parent="Background"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.45
+anchor_top = 0.12
+anchor_right = 0.55
+anchor_bottom = 0.95
+color = Color(0.06, 0.07, 0.08, 1)
+
+[node name="ColossusCanopy" type="ColorRect" parent="Background"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.22
+anchor_top = 0.03
+anchor_right = 0.78
+anchor_bottom = 0.30
+color = Color(0.05, 0.09, 0.08, 0.98)
+
+[node name="RuinsLeft" type="ColorRect" parent="Background"]
+layout_mode = 1
+anchors_preset = 3
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 18.0
+offset_top = -280.0
+offset_right = 180.0
+offset_bottom = -24.0
+color = Color(0.08, 0.08, 0.09, 0.88)
+
+[node name="RuinsRight" type="ColorRect" parent="Background"]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -190.0
+offset_top = -320.0
+offset_right = -18.0
+offset_bottom = -20.0
+color = Color(0.08, 0.08, 0.09, 0.84)
+
+[node name="MistTop" type="ColorRect" parent="Background"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = 140.0
+color = Color(0.20, 0.25, 0.24, 0.08)
+
+[node name="MistBottom" type="ColorRect" parent="Background"]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_top = -240.0
+color = Color(0.31, 0.38, 0.33, 0.20)
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_constants/margin_left = 24
+theme_override_constants/margin_top = 20
+theme_override_constants/margin_right = 24
+theme_override_constants/margin_bottom = 20
+
+[node name="CenterContainer" type="CenterContainer" parent="MarginContainer"]
+layout_mode = 2
+
+[node name="Panel" type="PanelContainer" parent="MarginContainer/CenterContainer"]
+layout_mode = 2
+custom_minimum_size = Vector2(0, 0)
+size_flags_horizontal = 4
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/CenterContainer/Panel"]
+layout_mode = 2
+custom_minimum_size = Vector2(320, 0)
+size_flags_horizontal = 4
+theme_override_constants/separation = 14
+
+[node name="TopSpacer" type="Control" parent="MarginContainer/CenterContainer/Panel/VBoxContainer"]
+custom_minimum_size = Vector2(0, 6)
+layout_mode = 2
+
+[node name="Title" type="Label" parent="MarginContainer/CenterContainer/Panel/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 42
+text = "Noxxon Aeghardium"
+horizontal_alignment = 1
+
+[node name="Subtitle" type="Label" parent="MarginContainer/CenterContainer/Panel/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "RPG tático offline em fantasia sombria"
+horizontal_alignment = 1
+
+[node name="Divider" type="ColorRect" parent="MarginContainer/CenterContainer/Panel/VBoxContainer"]
+custom_minimum_size = Vector2(0, 2)
+layout_mode = 2
+color = Color(0.79, 0.65, 0.27, 0.65)
+
+[node name="Lore" type="Label" parent="MarginContainer/CenterContainer/Panel/VBoxContainer"]
+layout_mode = 2
+autowrap_mode = 3
+text = "Uma vila cresce à sombra da dungeon infinita. Entre ruínas, névoa e ouro antigo, todo Escolhido precisa decidir até onde vai descer."
+horizontal_alignment = 1
+
+[node name="Buttons" type="VBoxContainer" parent="MarginContainer/CenterContainer/Panel/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="NewGameButton" type="Button" parent="MarginContainer/CenterContainer/Panel/VBoxContainer/Buttons"]
+layout_mode = 2
+text = "Novo Jogo"
+
+[node name="LoadButton" type="Button" parent="MarginContainer/CenterContainer/Panel/VBoxContainer/Buttons"]
+layout_mode = 2
+text = "Continuar"
+
+[node name="DeleteButton" type="Button" parent="MarginContainer/CenterContainer/Panel/VBoxContainer/Buttons"]
+layout_mode = 2
+text = "Apagar Save"
+
+[node name="ExitButton" type="Button" parent="MarginContainer/CenterContainer/Panel/VBoxContainer/Buttons"]
+layout_mode = 2
+text = "Sair"
+
+[node name="BottomSpacer" type="Control" parent="MarginContainer/CenterContainer/Panel/VBoxContainer"]
+custom_minimum_size = Vector2(0, 2)
+layout_mode = 2
+
+[connection signal="pressed" from="MarginContainer/CenterContainer/Panel/VBoxContainer/Buttons/NewGameButton" to="." method="_on_new_game_pressed"]
+[connection signal="pressed" from="MarginContainer/CenterContainer/Panel/VBoxContainer/Buttons/LoadButton" to="." method="_on_load_button_pressed"]
+[connection signal="pressed" from="MarginContainer/CenterContainer/Panel/VBoxContainer/Buttons/DeleteButton" to="." method="_on_delete_button_pressed"]
+[connection signal="pressed" from="MarginContainer/CenterContainer/Panel/VBoxContainer/Buttons/ExitButton" to="." method="_on_exit_button_pressed"]

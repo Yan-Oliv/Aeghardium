@@ -1,0 +1,42 @@
+[gd_scene load_steps=7 format=3]
+
+[ext_resource type="Script" path="res://scripts/enemies/EnemyBase.gd" id="1"]
+[ext_resource type="Script" path="res://scripts/enemies/EnemyAI.gd" id="2"]
+
+[sub_resource type="CapsuleShape3D" id="1"]
+radius = 0.5
+height = 1.1
+
+[sub_resource type="CapsuleMesh" id="2"]
+radius = 0.45
+mid_height = 1.0
+
+[sub_resource type="StandardMaterial3D" id="3"]
+albedo_color = Color(0.72, 0.76, 0.38, 1)
+roughness = 0.82
+
+[node name="DraconicSprout" type="CharacterBody3D"]
+script = ExtResource("1")
+enemy_id = "draconic_sprout"
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("1")
+
+[node name="Visual" type="MeshInstance3D" parent="."]
+mesh = SubResource("2")
+material_override = SubResource("3")
+
+[node name="AI" type="Node" parent="."]
+script = ExtResource("2")
+
+[node name="SubViewport" type="Node3D" parent="."]
+
+[node name="EnemyUI" type="SubViewport" parent="SubViewport"]
+size = Vector2i(128, 24)
+transparent_bg = true
+
+[node name="LifeBar" type="ProgressBar" parent="SubViewport/EnemyUI"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+show_percentage = false

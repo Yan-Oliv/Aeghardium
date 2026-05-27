@@ -1,0 +1,258 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/BattleScreenController.gd" id="1"]
+
+[node name="BattleScreen" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1")
+
+[node name="Background" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="Sky" type="ColorRect" parent="Background"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0.05, 0.06, 0.08, 1)
+
+[node name="Mist" type="ColorRect" parent="Background"]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_top = -260.0
+color = Color(0.24, 0.31, 0.26, 0.16)
+
+[node name="TreeBand" type="ColorRect" parent="Background"]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_top = -210.0
+color = Color(0.07, 0.09, 0.07, 1)
+
+[node name="Ground" type="ColorRect" parent="Background"]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_top = -110.0
+color = Color(0.10, 0.12, 0.08, 1)
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 16
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 16
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="Header" type="PanelContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="HeaderBox" type="HBoxContainer" parent="MarginContainer/VBoxContainer/Header"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="BattleTitle" type="Label" parent="MarginContainer/VBoxContainer/Header/HeaderBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 22
+text = "Batalha"
+
+[node name="BiomeLabel" type="Label" parent="MarginContainer/VBoxContainer/Header/HeaderBox"]
+layout_mode = 2
+size_flags_horizontal = 2
+text = "Floresta do Início"
+horizontal_alignment = 1
+
+[node name="TurnLabel" type="Label" parent="MarginContainer/VBoxContainer/Header/HeaderBox"]
+layout_mode = 2
+size_flags_horizontal = 2
+text = "Rodada 1"
+horizontal_alignment = 2
+
+[node name="CombatRow" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 10
+
+[node name="PlayerPanel" type="PanelContainer" parent="MarginContainer/VBoxContainer/CombatRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="PlayerFlash" type="ColorRect" parent="MarginContainer/VBoxContainer/CombatRow/PlayerPanel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+color = Color(0.8, 0.16, 0.12, 0.0)
+
+[node name="PlayerRow" type="HBoxContainer" parent="MarginContainer/VBoxContainer/CombatRow/PlayerPanel"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="Portrait" type="PanelContainer" parent="MarginContainer/VBoxContainer/CombatRow/PlayerPanel/PlayerRow"]
+layout_mode = 2
+custom_minimum_size = Vector2(100, 100)
+
+[node name="PlayerGlyph" type="Label" parent="MarginContainer/VBoxContainer/CombatRow/PlayerPanel/PlayerRow/Portrait"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 42
+text = "SWD"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="PlayerColumn" type="VBoxContainer" parent="MarginContainer/VBoxContainer/CombatRow/PlayerPanel/PlayerRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 6
+
+[node name="PlayerName" type="Label" parent="MarginContainer/VBoxContainer/CombatRow/PlayerPanel/PlayerRow/PlayerColumn"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 22
+text = "Herói"
+
+[node name="Stats" type="VBoxContainer" parent="MarginContainer/VBoxContainer/CombatRow/PlayerPanel/PlayerRow/PlayerColumn"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="PlayerHPBar" type="ProgressBar" parent="MarginContainer/VBoxContainer/CombatRow/PlayerPanel/PlayerRow/PlayerColumn/Stats"]
+layout_mode = 2
+show_percentage = false
+
+[node name="PlayerHP" type="Label" parent="MarginContainer/VBoxContainer/CombatRow/PlayerPanel/PlayerRow/PlayerColumn/Stats"]
+layout_mode = 2
+text = "HP 0 / 0"
+
+[node name="PlayerMPBar" type="ProgressBar" parent="MarginContainer/VBoxContainer/CombatRow/PlayerPanel/PlayerRow/PlayerColumn/Stats"]
+layout_mode = 2
+show_percentage = false
+
+[node name="PlayerMP" type="Label" parent="MarginContainer/VBoxContainer/CombatRow/PlayerPanel/PlayerRow/PlayerColumn/Stats"]
+layout_mode = 2
+text = "MP 0 / 0"
+
+[node name="PlayerMeta" type="Label" parent="MarginContainer/VBoxContainer/CombatRow/PlayerPanel/PlayerRow/PlayerColumn"]
+layout_mode = 2
+text = "Meta"
+
+[node name="EnemyPanel" type="PanelContainer" parent="MarginContainer/VBoxContainer/CombatRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="EnemyFlash" type="ColorRect" parent="MarginContainer/VBoxContainer/CombatRow/EnemyPanel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+color = Color(0.8, 0.16, 0.12, 0.0)
+
+[node name="EnemyRow" type="HBoxContainer" parent="MarginContainer/VBoxContainer/CombatRow/EnemyPanel"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="EnemyColumn" type="VBoxContainer" parent="MarginContainer/VBoxContainer/CombatRow/EnemyPanel/EnemyRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 6
+
+[node name="EnemyName" type="Label" parent="MarginContainer/VBoxContainer/CombatRow/EnemyPanel/EnemyRow/EnemyColumn"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 22
+text = "Inimigo"
+horizontal_alignment = 2
+
+[node name="Stats" type="VBoxContainer" parent="MarginContainer/VBoxContainer/CombatRow/EnemyPanel/EnemyRow/EnemyColumn"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="EnemyHPBar" type="ProgressBar" parent="MarginContainer/VBoxContainer/CombatRow/EnemyPanel/EnemyRow/EnemyColumn/Stats"]
+layout_mode = 2
+show_percentage = false
+
+[node name="EnemyHP" type="Label" parent="MarginContainer/VBoxContainer/CombatRow/EnemyPanel/EnemyRow/EnemyColumn/Stats"]
+layout_mode = 2
+text = "HP 0 / 0"
+horizontal_alignment = 2
+
+[node name="EnemyMeta" type="Label" parent="MarginContainer/VBoxContainer/CombatRow/EnemyPanel/EnemyRow/EnemyColumn"]
+layout_mode = 2
+text = "Meta"
+horizontal_alignment = 2
+
+[node name="Portrait" type="PanelContainer" parent="MarginContainer/VBoxContainer/CombatRow/EnemyPanel/EnemyRow"]
+layout_mode = 2
+custom_minimum_size = Vector2(100, 100)
+
+[node name="EnemyGlyph" type="Label" parent="MarginContainer/VBoxContainer/CombatRow/EnemyPanel/EnemyRow/Portrait"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 42
+text = "SLM"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Actions" type="GridContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+columns = 3
+theme_override_constants/h_separation = 8
+theme_override_constants/v_separation = 8
+
+[node name="AttackButton" type="Button" parent="MarginContainer/VBoxContainer/Actions"]
+layout_mode = 2
+text = "Atacar"
+
+[node name="SkillOneButton" type="Button" parent="MarginContainer/VBoxContainer/Actions"]
+layout_mode = 2
+text = "Skill 1"
+
+[node name="SkillTwoButton" type="Button" parent="MarginContainer/VBoxContainer/Actions"]
+layout_mode = 2
+text = "Skill 2"
+
+[node name="ItemButton" type="Button" parent="MarginContainer/VBoxContainer/Actions"]
+layout_mode = 2
+text = "Poção"
+
+[node name="DefendButton" type="Button" parent="MarginContainer/VBoxContainer/Actions"]
+layout_mode = 2
+text = "Defender"
+
+[node name="FleeButton" type="Button" parent="MarginContainer/VBoxContainer/Actions"]
+layout_mode = 2
+text = "Fugir"
+
+[node name="LogPanel" type="PanelContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+custom_minimum_size = Vector2(0, 164)
+
+[node name="LogLabel" type="RichTextLabel" parent="MarginContainer/VBoxContainer/LogPanel"]
+layout_mode = 2
+bbcode_enabled = true
+fit_content = false
+scroll_active = true
+size_flags_vertical = 3
+
+[connection signal="pressed" from="MarginContainer/VBoxContainer/Actions/AttackButton" to="." method="_on_attack_button_pressed"]
+[connection signal="pressed" from="MarginContainer/VBoxContainer/Actions/SkillOneButton" to="." method="_on_skill_one_button_pressed"]
+[connection signal="pressed" from="MarginContainer/VBoxContainer/Actions/SkillTwoButton" to="." method="_on_skill_two_button_pressed"]
+[connection signal="pressed" from="MarginContainer/VBoxContainer/Actions/ItemButton" to="." method="_on_item_button_pressed"]
+[connection signal="pressed" from="MarginContainer/VBoxContainer/Actions/DefendButton" to="." method="_on_defend_button_pressed"]
+[connection signal="pressed" from="MarginContainer/VBoxContainer/Actions/FleeButton" to="." method="_on_flee_button_pressed"]

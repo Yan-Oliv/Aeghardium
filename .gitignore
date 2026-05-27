@@ -1,0 +1,14 @@
+﻿.godot/
+.import/
+export.cfg
+export_credentials.cfg
+*.tmp
+*.log
+
+# Builds locais
+builds/android/*.apk
+builds/android/*.aab
+
+# Sistema
+.DS_Store
+Thumbs.db
