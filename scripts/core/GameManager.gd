@@ -4,17 +4,30 @@ const TITLE_SCENE := "res://scenes/ui/TitleScreen.tscn"
 const INTRO_SCENE := "res://scenes/ui/IntroScreen.tscn"
 const CLASS_SCENE := "res://scenes/ui/ClassSelectionScreen.tscn"
 const CHARACTER_CREATION_SCENE := "res://scenes/ui/CharacterCreationScreen.tscn"
-const BASE_SCENE := "res://scenes/ui/BaseScreen.tscn"
+const BASE_SCENE := "res://scenes/base/BaseExplore.tscn"
+const LEGACY_BASE_SCENE := "res://scenes/ui/BaseScreen.tscn"
+const DUNGEON_FLOOR_01_SCENE := "res://scenes/dungeon/DungeonFloor01.tscn"
 const BATTLE_SCENE := "res://scenes/ui/BattleScreen.tscn"
+const PAUSE_SCENE := "res://scenes/ui/PauseMenu.tscn"
 
 var scene_host: Node = null
 var overlay_host: Node = null
 var current_scene: Node = null
+var current_overlay: Node = null
 var selected_class_id: String = ""
 var player_name: String = ""
 var player_state: Dictionary = {}
 var current_battle_data: Dictionary = {}
 var pending_message: String = ""
+
+const DEFAULT_APPEARANCE := {
+	"body_type": "masculine",
+	"skin_tone": "skin_03",
+	"eye_color": "amber",
+	"hair_style": "short",
+	"hair_color": "black",
+	"aura_enabled": true
+}
 
 
 func register_hosts(main_host: Node, ui_host: Node) -> void:
@@ -49,6 +62,10 @@ func show_battle() -> void:
 	_set_scene(BATTLE_SCENE)
 
 
+func show_dungeon_floor_01() -> void:
+	_set_scene(DUNGEON_FLOOR_01_SCENE)
+
+
 func start_new_game() -> void:
 	selected_class_id = ""
 	player_name = ""
@@ -61,11 +78,11 @@ func choose_class(class_id: String) -> void:
 	selected_class_id = class_id
 
 
-func confirm_character(name: String) -> void:
-	player_name = name.strip_edges()
+func confirm_character(chosen_name: String, appearance: Dictionary = {}) -> void:
+	player_name = chosen_name.strip_edges()
 	if player_name.is_empty():
 		player_name = "Desperto"
-	player_state = _build_new_player(selected_class_id, player_name)
+	player_state = _build_new_player(selected_class_id, player_name, appearance)
 	save_current_game()
 	show_base()
 
@@ -88,7 +105,7 @@ func save_current_game() -> bool:
 	if player_state.is_empty():
 		return false
 	return SaveManager.save_game({
-		"version": 2,
+		"version": 3,
 		"player_state": player_state
 	})
 
@@ -107,6 +124,12 @@ func start_dungeon_battle() -> void:
 		return
 	current_battle_data = _build_battle_for_floor(int(player_state.get("floor", 1)))
 	show_battle()
+
+
+func start_dungeon_floor_01() -> void:
+	if player_state.is_empty():
+		return
+	show_dungeon_floor_01()
 
 
 func resolve_battle(victory: bool, rewards: Dictionary = {}) -> void:
@@ -140,6 +163,24 @@ func resolve_battle(victory: bool, rewards: Dictionary = {}) -> void:
 
 func get_player_state() -> Dictionary:
 	return player_state
+
+
+func get_default_appearance() -> Dictionary:
+	return DEFAULT_APPEARANCE.duplicate(true)
+
+
+func normalize_appearance(appearance: Dictionary) -> Dictionary:
+	var normalized: Dictionary = get_default_appearance()
+	for key in normalized.keys():
+		if appearance.has(key):
+			normalized[key] = appearance[key]
+	normalized["body_type"] = str(normalized.get("body_type", "masculine"))
+	normalized["skin_tone"] = str(normalized.get("skin_tone", "skin_03"))
+	normalized["eye_color"] = str(normalized.get("eye_color", "amber"))
+	normalized["hair_style"] = str(normalized.get("hair_style", "short"))
+	normalized["hair_color"] = str(normalized.get("hair_color", "black"))
+	normalized["aura_enabled"] = bool(normalized.get("aura_enabled", true))
+	return normalized
 
 
 func get_current_battle_data() -> Dictionary:
@@ -215,6 +256,22 @@ func show_message(message: String) -> void:
 		current_scene.show_message(message)
 
 
+func toggle_pause_menu() -> void:
+	if overlay_host == null or not is_instance_valid(overlay_host):
+		return
+	if current_overlay != null and is_instance_valid(current_overlay):
+		current_overlay.queue_free()
+		current_overlay = null
+		get_tree().paused = false
+		return
+	var packed: PackedScene = load(PAUSE_SCENE) as PackedScene
+	if packed == null:
+		return
+	current_overlay = packed.instantiate()
+	overlay_host.add_child(current_overlay)
+	get_tree().paused = true
+
+
 func consume_pending_message() -> String:
 	var message: String = pending_message
 	pending_message = ""
@@ -222,6 +279,10 @@ func consume_pending_message() -> String:
 
 
 func _set_scene(scene_path: String) -> void:
+	if current_overlay != null and is_instance_valid(current_overlay):
+		current_overlay.queue_free()
+	current_overlay = null
+	get_tree().paused = false
 	if current_scene != null and is_instance_valid(current_scene):
 		current_scene.queue_free()
 	current_scene = null
@@ -234,7 +295,7 @@ func _set_scene(scene_path: String) -> void:
 	scene_host.add_child(current_scene)
 
 
-func _build_new_player(class_id: String, chosen_name: String) -> Dictionary:
+func _build_new_player(class_id: String, chosen_name: String, appearance: Dictionary = {}) -> Dictionary:
 	var class_info: Dictionary = ClassData.get_class_data(class_id)
 	var stats: Dictionary = class_info.get("stats", {})
 	return {
@@ -255,7 +316,8 @@ func _build_new_player(class_id: String, chosen_name: String) -> Dictionary:
 		"agility": float(stats.get("agilidade", 10)),
 		"luck": float(stats.get("sorte", 10)),
 		"skill_ids": class_info.get("skills", []),
-		"inventory": {"small_potion": 3}
+		"inventory": {"small_potion": 3},
+		"appearance": normalize_appearance(appearance)
 	}
 
 
@@ -283,6 +345,7 @@ func _normalize_player_state() -> void:
 	player_state["luck"] = float(player_state.get("luck", stats.get("sorte", 10)))
 	player_state["skill_ids"] = player_state.get("skill_ids", class_info.get("skills", []))
 	player_state["inventory"] = player_state.get("inventory", {"small_potion": 3})
+	player_state["appearance"] = normalize_appearance(player_state.get("appearance", {}))
 
 
 func _build_battle_for_floor(floor_value: int) -> Dictionary:

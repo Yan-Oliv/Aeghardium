@@ -1,0 +1,382 @@
+[gd_scene load_steps=30 format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/player/Player.tscn" id="1"]
+[ext_resource type="Script" path="res://scripts/base/BaseExploreController.gd" id="2"]
+[ext_resource type="Script" path="res://scripts/base/BasePortalInteractable.gd" id="3"]
+[ext_resource type="PackedScene" path="res://scenes/ui/MobileControls.tscn" id="4"]
+
+[sub_resource type="BoxMesh" id="1"]
+size = Vector3(32, 1, 32)
+
+[sub_resource type="BoxShape3D" id="2"]
+size = Vector3(32, 1, 32)
+
+[sub_resource type="StandardMaterial3D" id="3"]
+albedo_color = Color(0.16, 0.18, 0.15, 1)
+roughness = 0.98
+
+[sub_resource type="Environment" id="4"]
+background_mode = 1
+background_color = Color(0.04, 0.05, 0.08, 1)
+ambient_light_source = 2
+ambient_light_energy = 0.45
+fog_enabled = true
+fog_light_color = Color(0.19, 0.24, 0.26, 1)
+fog_density = 0.012
+volumetric_fog_enabled = false
+volumetric_fog_density = 0.045
+
+[sub_resource type="StandardMaterial3D" id="5"]
+albedo_color = Color(0.24, 0.18, 0.12, 1)
+roughness = 0.92
+
+[sub_resource type="CylinderMesh" id="6"]
+top_radius = 0.18
+bottom_radius = 0.24
+height = 0.7
+
+[sub_resource type="SphereMesh" id="7"]
+radius = 0.22
+height = 0.44
+
+[sub_resource type="CylinderMesh" id="8"]
+top_radius = 0.16
+bottom_radius = 0.22
+height = 3.2
+
+[sub_resource type="SphereMesh" id="9"]
+radius = 1.0
+height = 2.0
+
+[sub_resource type="BoxMesh" id="10"]
+size = Vector3(2.8, 1.8, 2.4)
+
+[sub_resource type="BoxMesh" id="11"]
+size = Vector3(3.2, 0.35, 2.8)
+
+[sub_resource type="CylinderMesh" id="12"]
+top_radius = 0.8
+bottom_radius = 1.15
+height = 3.2
+
+[sub_resource type="TorusMesh" id="13"]
+inner_radius = 0.14
+outer_radius = 1.35
+ring_sides = 12
+rings = 28
+
+[sub_resource type="SphereShape3D" id="14"]
+radius = 2.2
+
+[sub_resource type="BoxShape3D" id="15"]
+size = Vector3(32, 4, 1)
+
+[sub_resource type="BoxShape3D" id="16"]
+size = Vector3(1, 4, 32)
+
+[sub_resource type="BoxMesh" id="17"]
+size = Vector3(1.2, 0.12, 0.55)
+
+[sub_resource type="StandardMaterial3D" id="18"]
+albedo_color = Color(0.74, 0.53, 0.24, 1)
+emission_enabled = true
+emission = Color(0.95, 0.55, 0.24, 1)
+emission_energy_multiplier = 1.1
+roughness = 0.32
+
+[sub_resource type="ParticleProcessMaterial" id="19"]
+direction = Vector3(0, 1, 0)
+spread = 16.0
+gravity = Vector3(0, 0.4, 0)
+initial_velocity_min = 0.3
+initial_velocity_max = 0.7
+scale_min = 0.18
+scale_max = 0.3
+color = Color(0.83, 0.86, 0.92, 0.20)
+
+[sub_resource type="ParticleProcessMaterial" id="20"]
+direction = Vector3(0, 1, 0)
+spread = 14.0
+gravity = Vector3(0, 0.2, 0)
+initial_velocity_min = 0.45
+initial_velocity_max = 0.8
+scale_min = 0.14
+scale_max = 0.24
+color = Color(1, 0.68, 0.25, 0.5)
+
+[node name="BaseExplore" type="Node3D"]
+script = ExtResource("2")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("4")
+
+[node name="MoonLight" type="DirectionalLight3D" parent="."]
+rotation_degrees = Vector3(-48, 34, 0)
+light_color = Color(0.70, 0.76, 0.92, 1)
+light_energy = 0.95
+shadow_enabled = true
+
+[node name="FireLight" type="OmniLight3D" parent="."]
+position = Vector3(0, 1.2, 0)
+light_color = Color(1, 0.59, 0.26, 1)
+light_energy = 1.5
+omni_range = 8.0
+
+[node name="Ground" type="StaticBody3D" parent="."]
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Ground"]
+mesh = SubResource("1")
+material_override = SubResource("3")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Ground"]
+shape = SubResource("2")
+
+[node name="MainPath" type="MeshInstance3D" parent="."]
+position = Vector3(0, 0.06, -4.6)
+scale = Vector3(0.9, 0.1, 3.8)
+mesh = SubResource("17")
+material_override = SubResource("5")
+
+[node name="Campfire" type="Node3D" parent="."]
+position = Vector3(0, 0, 0)
+
+[node name="LogA" type="MeshInstance3D" parent="Campfire"]
+position = Vector3(-0.14, 0.16, 0)
+rotation_degrees = Vector3(0, 0, 55)
+mesh = SubResource("6")
+material_override = SubResource("5")
+
+[node name="LogB" type="MeshInstance3D" parent="Campfire"]
+position = Vector3(0.14, 0.16, 0)
+rotation_degrees = Vector3(0, 0, -55)
+mesh = SubResource("6")
+material_override = SubResource("5")
+
+[node name="Flame" type="MeshInstance3D" parent="Campfire"]
+position = Vector3(0, 0.46, 0)
+mesh = SubResource("7")
+material_override = SubResource("18")
+
+[node name="FireEmbers" type="GPUParticles3D" parent="Campfire"]
+position = Vector3(0, 0.55, 0)
+amount = 20
+lifetime = 1.3
+draw_pass_1 = SubResource("7")
+process_material = SubResource("20")
+emitting = true
+
+[node name="MistParticles" type="GPUParticles3D" parent="."]
+position = Vector3(0, 1.6, 0)
+amount = 42
+lifetime = 7.0
+draw_pass_1 = SubResource("7")
+process_material = SubResource("19")
+emitting = true
+
+[node name="PortalFrame" type="MeshInstance3D" parent="."]
+position = Vector3(0, 1.8, -10.8)
+mesh = SubResource("12")
+material_override = SubResource("5")
+
+[node name="PortalCore" type="MeshInstance3D" parent="."]
+position = Vector3(0, 1.7, -10.8)
+rotation_degrees = Vector3(90, 0, 0)
+mesh = SubResource("13")
+material_override = SubResource("18")
+
+[node name="PortalArea" type="Area3D" parent="."]
+position = Vector3(0, 1.4, -10.8)
+script = ExtResource("3")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="PortalArea"]
+shape = SubResource("14")
+
+[node name="PortalSign" type="Label3D" parent="."]
+position = Vector3(0, 0.9, -8.8)
+text = "Entrada da Dungeon"
+font_size = 48
+modulate = Color(0.90, 0.83, 0.60, 1)
+
+[node name="Cabin" type="MeshInstance3D" parent="."]
+position = Vector3(-6.0, 0.9, 1.0)
+mesh = SubResource("10")
+material_override = SubResource("5")
+
+[node name="CabinRoof" type="MeshInstance3D" parent="."]
+position = Vector3(-6.0, 1.95, 1.0)
+mesh = SubResource("11")
+material_override = SubResource("18")
+
+[node name="Tent" type="MeshInstance3D" parent="."]
+position = Vector3(6.2, 1.6, 1.4)
+mesh = SubResource("12")
+material_override = SubResource("5")
+
+[node name="TreeA" type="MeshInstance3D" parent="."]
+position = Vector3(-9.2, 1.6, -5.8)
+mesh = SubResource("8")
+material_override = SubResource("5")
+
+[node name="TreeACanopy" type="MeshInstance3D" parent="."]
+position = Vector3(-9.2, 4.1, -5.8)
+mesh = SubResource("9")
+material_override = SubResource("3")
+
+[node name="TreeB" type="MeshInstance3D" parent="."]
+position = Vector3(8.8, 1.7, -4.6)
+mesh = SubResource("8")
+material_override = SubResource("5")
+
+[node name="TreeBCanopy" type="MeshInstance3D" parent="."]
+position = Vector3(8.8, 4.2, -4.6)
+mesh = SubResource("9")
+material_override = SubResource("3")
+
+[node name="TreeC" type="MeshInstance3D" parent="."]
+position = Vector3(-10.6, 1.7, 6.2)
+mesh = SubResource("8")
+material_override = SubResource("5")
+
+[node name="TreeCCanopy" type="MeshInstance3D" parent="."]
+position = Vector3(-10.6, 4.1, 6.2)
+mesh = SubResource("9")
+material_override = SubResource("3")
+
+[node name="NorthWall" type="StaticBody3D" parent="."]
+position = Vector3(0, 2, -15.8)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="NorthWall"]
+shape = SubResource("15")
+
+[node name="SouthWall" type="StaticBody3D" parent="."]
+position = Vector3(0, 2, 15.8)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="SouthWall"]
+shape = SubResource("15")
+
+[node name="WestWall" type="StaticBody3D" parent="."]
+position = Vector3(-15.8, 2, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="WestWall"]
+shape = SubResource("16")
+
+[node name="EastWall" type="StaticBody3D" parent="."]
+position = Vector3(15.8, 2, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="EastWall"]
+shape = SubResource("16")
+
+[node name="SpawnPoint" type="Marker3D" parent="."]
+position = Vector3(0, 0.5, 6)
+
+[node name="Player" parent="." instance=ExtResource("1")]
+position = Vector3(0, 0.5, 6)
+
+[node name="BaseUI" type="CanvasLayer" parent="."]
+
+[node name="TopLeft" type="MarginContainer" parent="BaseUI"]
+anchors_preset = 0
+offset_left = 12.0
+offset_top = 12.0
+offset_right = 290.0
+offset_bottom = 180.0
+
+[node name="InfoPanel" type="PanelContainer" parent="BaseUI/TopLeft"]
+layout_mode = 2
+
+[node name="InfoLabel" type="RichTextLabel" parent="BaseUI/TopLeft/InfoPanel"]
+layout_mode = 2
+bbcode_enabled = true
+fit_content = true
+scroll_active = false
+
+[node name="TopRight" type="MarginContainer" parent="BaseUI"]
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -250.0
+offset_top = 82.0
+offset_right = -12.0
+offset_bottom = 260.0
+
+[node name="Buttons" type="VBoxContainer" parent="BaseUI/TopRight"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="RestButton" type="Button" parent="BaseUI/TopRight/Buttons"]
+layout_mode = 2
+text = "Descansar"
+
+[node name="SaveButton" type="Button" parent="BaseUI/TopRight/Buttons"]
+layout_mode = 2
+text = "Salvar Agora"
+
+[node name="TitleButton" type="Button" parent="BaseUI/TopRight/Buttons"]
+layout_mode = 2
+text = "Voltar ao Título"
+
+[node name="MobileControls" parent="BaseUI" instance=ExtResource("4")]
+
+[node name="BottomCenter" type="CenterContainer" parent="BaseUI"]
+anchors_preset = 12
+anchor_left = 0.22
+anchor_top = 1.0
+anchor_right = 0.78
+anchor_bottom = 1.0
+offset_top = -116.0
+offset_bottom = -52.0
+
+[node name="MessageLabel" type="Label" parent="BaseUI/BottomCenter"]
+horizontal_alignment = 1
+
+[node name="BottomHint" type="CenterContainer" parent="BaseUI"]
+anchors_preset = 12
+anchor_left = 0.18
+anchor_top = 1.0
+anchor_right = 0.82
+anchor_bottom = 1.0
+offset_top = -50.0
+offset_bottom = -12.0
+
+[node name="HintLabel" type="Label" parent="BaseUI/BottomHint"]
+horizontal_alignment = 1
+
+[node name="PromptPanel" type="PanelContainer" parent="BaseUI"]
+visible = false
+anchors_preset = 8
+anchor_left = 0.35
+anchor_top = 0.34
+anchor_right = 0.65
+anchor_bottom = 0.56
+
+[node name="PromptVBox" type="VBoxContainer" parent="BaseUI/PromptPanel"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="PromptLabel" type="Label" parent="BaseUI/PromptPanel/PromptVBox"]
+layout_mode = 2
+text = "Entrar na Dungeon?"
+horizontal_alignment = 1
+
+[node name="PromptButtons" type="HBoxContainer" parent="BaseUI/PromptPanel/PromptVBox"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="EnterButton" type="Button" parent="BaseUI/PromptPanel/PromptVBox/PromptButtons"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Entrar"
+
+[node name="CancelButton" type="Button" parent="BaseUI/PromptPanel/PromptVBox/PromptButtons"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Cancelar"
+
+[connection signal="body_entered" from="PortalArea" to="." method="_on_portal_area_body_entered"]
+[connection signal="body_exited" from="PortalArea" to="." method="_on_portal_area_body_exited"]
+[connection signal="interaction_requested" from="PortalArea" to="." method="_on_portal_interaction_requested"]
+[connection signal="pressed" from="BaseUI/TopRight/Buttons/RestButton" to="." method="_on_rest_button_pressed"]
+[connection signal="pressed" from="BaseUI/TopRight/Buttons/SaveButton" to="." method="_on_save_button_pressed"]
+[connection signal="pressed" from="BaseUI/TopRight/Buttons/TitleButton" to="." method="_on_title_button_pressed"]
+[connection signal="pressed" from="BaseUI/PromptPanel/PromptVBox/PromptButtons/EnterButton" to="." method="_on_enter_button_pressed"]
+[connection signal="pressed" from="BaseUI/PromptPanel/PromptVBox/PromptButtons/CancelButton" to="." method="_on_cancel_button_pressed"]

@@ -33,7 +33,7 @@ ambient_light_source = 2
 ambient_light_energy = 0.65
 fog_enabled = true
 fog_light_color = Color(0.42, 0.60, 0.72, 1)
-volumetric_fog_enabled = true
+volumetric_fog_enabled = false
 volumetric_fog_density = 0.06
 
 [sub_resource type="StandardMaterial3D" id="7"]

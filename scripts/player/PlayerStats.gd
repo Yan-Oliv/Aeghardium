@@ -90,10 +90,9 @@ func in_combat() -> bool:
 	return now - last_combat_time < Constants.OUT_OF_COMBAT_DELAY
 
 
-func apply_modifier(name: String, payload: Dictionary) -> void:
-	active_modifiers[name] = payload
+func apply_modifier(modifier_name: String, payload: Dictionary) -> void:
+	active_modifiers[modifier_name] = payload
 
 
-func clear_modifier(name: String) -> void:
-	active_modifiers.erase(name)
-
+func clear_modifier(modifier_name: String) -> void:
+	active_modifiers.erase(modifier_name)

@@ -3,6 +3,7 @@ class_name PlayerController
 
 @export var walk_speed: float = 4.2
 @export var run_speed: float = 6.0
+@export var acceleration: float = 12.0
 @export var rotation_speed: float = 10.0
 @export var gravity: float = 22.0
 @export var camera_sensitivity: float = 0.012
@@ -20,17 +21,21 @@ var class_id: String = "warrior"
 var player_name: String = "Desperto"
 var move_input: Vector2 = Vector2.ZERO
 var camera_pitch: float = -0.35
+var camera_yaw: float = 0.0
 var is_dead: bool = false
 var invisible_until: float = 0.0
 var active_timers: Dictionary = {}
 var base_stats: Dictionary = {}
 var spawn_position: Vector3 = Vector3.ZERO
+var appearance: Dictionary = {}
 
 func _ready() -> void:
 	combat.setup(self)
 	stats.died.connect(_on_died)
 	stats.damaged.connect(_on_damaged)
-	pivot.rotation.x = camera_pitch
+	if not is_in_group("player_controller"):
+		add_to_group("player_controller")
+	_update_camera_pivot()
 
 
 func _physics_process(delta: float) -> void:
@@ -45,6 +50,7 @@ func _physics_process(delta: float) -> void:
 func initialize_new_character(new_class_id: String, new_name: String) -> void:
 	class_id = new_class_id
 	player_name = new_name
+	appearance = GameManager.get_default_appearance()
 	var data: Dictionary = ClassData.get_class_data(class_id)
 	stats.configure_from_class(data)
 	base_stats = stats.to_dictionary()
@@ -55,6 +61,7 @@ func initialize_new_character(new_class_id: String, new_name: String) -> void:
 func load_from_save(data: Dictionary) -> void:
 	class_id = str(data.get("class_id", "warrior"))
 	player_name = str(data.get("player_name", "Desperto"))
+	appearance = GameManager.normalize_appearance(data.get("appearance", {}))
 	var class_info: Dictionary = ClassData.get_class_data(class_id)
 	stats.configure_from_class(class_info)
 	var snapshot: Dictionary = data.get("stats", {})
@@ -69,8 +76,16 @@ func load_from_save(data: Dictionary) -> void:
 func build_save_data() -> Dictionary:
 	return {
 		"stats": stats.to_dictionary(),
-		"position": [global_position.x, global_position.y, global_position.z]
+		"position": [global_position.x, global_position.y, global_position.z],
+		"appearance": appearance
 	}
+
+
+func apply_appearance(new_appearance: Dictionary) -> void:
+	appearance = GameManager.normalize_appearance(new_appearance)
+	for child in get_children():
+		if child is CharacterPreview3D:
+			(child as CharacterPreview3D).apply_appearance(class_id, appearance)
 
 
 func set_hud(target_hud: HUDController) -> void:
@@ -82,9 +97,9 @@ func set_move_input(value: Vector2) -> void:
 
 
 func add_camera_input(relative: Vector2) -> void:
-	rotate_y(-relative.x * camera_sensitivity / 0.012)
+	camera_yaw -= relative.x * camera_sensitivity / 0.012
 	camera_pitch = clampf(camera_pitch - relative.y * camera_sensitivity / 0.012, -0.9, 0.15)
-	pivot.rotation.x = camera_pitch
+	_update_camera_pivot()
 
 
 func request_basic_attack() -> void:
@@ -141,8 +156,8 @@ func spawn_skeleton_minion(duration: float) -> void:
 	get_parent().add_child(minion)
 
 
-func respawn_at(position: Vector3) -> void:
-	global_position = position
+func respawn_at(respawn_position: Vector3) -> void:
+	global_position = respawn_position
 	velocity = Vector3.ZERO
 	is_dead = false
 	mesh.visible = true
@@ -160,29 +175,25 @@ func _apply_gravity(delta: float) -> void:
 	if not is_on_floor():
 		velocity.y -= gravity * delta
 	else:
-		velocity.y = -0.1
+		velocity.y = 0.0
 
 
 func _handle_movement(delta: float) -> void:
-	var input_dir: Vector2 = move_input
-	if input_dir == Vector2.ZERO:
-		input_dir = Input.get_vector("move_left", "move_right", "move_forward", "move_backward")
-		if input_dir == Vector2.ZERO:
-			input_dir = Input.get_vector("move_left", "move_right", "move_up", "move_down")
-	var basis: Basis = Basis(Vector3.UP, rotation.y)
-	var direction: Vector3 = (basis * Vector3(input_dir.x, 0.0, input_dir.y)).normalized()
+	var input_dir: Vector2 = _get_movement_input()
+	var direction: Vector3 = _input_to_world_direction(input_dir)
 	var speed_mult: float = 1.0
 	for modifier in active_timers.values():
 		speed_mult *= float(modifier.get("speed_mult", 1.0))
 	var target_speed: float = lerpf(walk_speed, run_speed, clampf(input_dir.length(), 0.0, 1.0)) * speed_mult
-	if direction != Vector3.ZERO:
-		velocity.x = direction.x * target_speed
-		velocity.z = direction.z * target_speed
-		var target_yaw: float = atan2(direction.x, direction.z)
+	if direction.length() > 0.05:
+		var target_velocity: Vector3 = direction * target_speed
+		velocity.x = move_toward(velocity.x, target_velocity.x, acceleration * delta)
+		velocity.z = move_toward(velocity.z, target_velocity.z, acceleration * delta)
+		var target_yaw: float = atan2(-direction.x, -direction.z)
 		rotation.y = lerp_angle(rotation.y, target_yaw, clampf(rotation_speed * delta, 0.0, 1.0))
 	else:
-		velocity.x = move_toward(velocity.x, 0.0, target_speed)
-		velocity.z = move_toward(velocity.z, 0.0, target_speed)
+		velocity.x = move_toward(velocity.x, 0.0, acceleration * delta)
+		velocity.z = move_toward(velocity.z, 0.0, acceleration * delta)
 
 
 func _recalculate_stats() -> void:
@@ -227,3 +238,52 @@ func _to_string_array(values: Variant) -> Array[String]:
 	for value in values:
 		result.append(str(value))
 	return result
+
+
+func _get_movement_input() -> Vector2:
+	var input_vector := Vector2.ZERO
+	input_vector.x = Input.get_action_strength("move_right") - Input.get_action_strength("move_left")
+	input_vector.y = Input.get_action_strength("move_backward") - Input.get_action_strength("move_forward")
+	if input_vector == Vector2.ZERO:
+		input_vector.y = Input.get_action_strength("move_down") - Input.get_action_strength("move_up")
+
+	var mobile_controls: Node = get_tree().get_first_node_in_group("mobile_controls")
+	if mobile_controls != null and mobile_controls.has_method("get_move_vector"):
+		var mobile_vector: Vector2 = mobile_controls.call("get_move_vector")
+		if mobile_vector.length() > 0.05:
+			input_vector = mobile_vector
+	elif move_input.length() > 0.05:
+		input_vector = move_input
+
+	if input_vector.length() > 1.0:
+		input_vector = input_vector.normalized()
+	return input_vector
+
+
+func _input_to_world_direction(input_vector: Vector2) -> Vector3:
+	if input_vector.length() < 0.05:
+		return Vector3.ZERO
+
+	var forward: Vector3 = -global_transform.basis.z
+	var right: Vector3 = global_transform.basis.x
+	var active_camera: Camera3D = get_viewport().get_camera_3d()
+	if active_camera != null:
+		forward = -active_camera.global_transform.basis.z
+		right = active_camera.global_transform.basis.x
+	elif pivot != null:
+		forward = -pivot.global_transform.basis.z
+		right = pivot.global_transform.basis.x
+
+	forward.y = 0.0
+	right.y = 0.0
+	forward = forward.normalized()
+	right = right.normalized()
+
+	var direction: Vector3 = (right * input_vector.x) + (forward * -input_vector.y)
+	return direction.normalized()
+
+
+func _update_camera_pivot() -> void:
+	if pivot == null:
+		return
+	pivot.rotation = Vector3(camera_pitch, camera_yaw, 0.0)

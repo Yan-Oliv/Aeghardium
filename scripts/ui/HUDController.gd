@@ -48,8 +48,8 @@ func bind_player(target_player: PlayerController) -> void:
 	_set_skill_labels()
 
 
-func set_class_name(class_name: String) -> void:
-	class_label.text = class_name
+func set_class_name(display_class_name: String) -> void:
+	class_label.text = display_class_name
 	level_label.text = "Nivel 1"
 
 

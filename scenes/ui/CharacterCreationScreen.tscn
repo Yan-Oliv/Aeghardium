@@ -1,6 +1,7 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene load_steps=3 format=3]
 
 [ext_resource type="Script" path="res://scripts/ui/CharacterCreationController.gd" id="1"]
+[ext_resource type="PackedScene" path="res://scenes/characters/CharacterPreview3D.tscn" id="2"]
 
 [node name="CharacterCreationScreen" type="Control"]
 layout_mode = 3
@@ -94,14 +95,30 @@ theme_override_constants/separation = 10
 
 [node name="PreviewPanel" type="PanelContainer" parent="MarginContainer/PanelContainer/OuterVBox/ScrollContainer/VBoxContainer/TopRow"]
 layout_mode = 2
-custom_minimum_size = Vector2(152, 152)
+custom_minimum_size = Vector2(220, 260)
 
-[node name="IconLabel" type="Label" parent="MarginContainer/PanelContainer/OuterVBox/ScrollContainer/VBoxContainer/TopRow/PreviewPanel"]
+[node name="PreviewVBox" type="VBoxContainer" parent="MarginContainer/PanelContainer/OuterVBox/ScrollContainer/VBoxContainer/TopRow/PreviewPanel"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 54
+theme_override_constants/separation = 8
+
+[node name="PreviewViewportContainer" type="SubViewportContainer" parent="MarginContainer/PanelContainer/OuterVBox/ScrollContainer/VBoxContainer/TopRow/PreviewPanel/PreviewVBox"]
+layout_mode = 2
+size_flags_vertical = 3
+stretch = true
+
+[node name="PreviewViewport" type="SubViewport" parent="MarginContainer/PanelContainer/OuterVBox/ScrollContainer/VBoxContainer/TopRow/PreviewPanel/PreviewVBox/PreviewViewportContainer"]
+transparent_bg = true
+handle_input_locally = false
+size = Vector2i(420, 420)
+render_target_update_mode = 4
+
+[node name="CharacterPreview3D" parent="MarginContainer/PanelContainer/OuterVBox/ScrollContainer/VBoxContainer/TopRow/PreviewPanel/PreviewVBox/PreviewViewportContainer/PreviewViewport" instance=ExtResource("2")]
+
+[node name="IconLabel" type="Label" parent="MarginContainer/PanelContainer/OuterVBox/ScrollContainer/VBoxContainer/TopRow/PreviewPanel/PreviewVBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
 text = "SWD"
 horizontal_alignment = 1
-vertical_alignment = 1
 
 [node name="InfoColumn" type="VBoxContainer" parent="MarginContainer/PanelContainer/OuterVBox/ScrollContainer/VBoxContainer/TopRow"]
 layout_mode = 2
@@ -125,11 +142,166 @@ size_flags_vertical = 3
 
 [node name="SummaryLabel" type="RichTextLabel" parent="MarginContainer/PanelContainer/OuterVBox/ScrollContainer/VBoxContainer/TopRow/InfoColumn/SummaryPanel"]
 layout_mode = 2
-custom_minimum_size = Vector2(0, 140)
+custom_minimum_size = Vector2(0, 160)
 bbcode_enabled = true
 fit_content = false
 scroll_active = true
 size_flags_vertical = 3
+
+[node name="AppearancePanel" type="PanelContainer" parent="MarginContainer/PanelContainer/OuterVBox/ScrollContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="AppearanceVBox" type="VBoxContainer" parent="MarginContainer/PanelContainer/OuterVBox/ScrollContainer/VBoxContainer/AppearancePanel"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="AppearanceTitle" type="Label" parent="MarginContainer/PanelContainer/OuterVBox/ScrollContainer/VBoxContainer/AppearancePanel/AppearanceVBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "Aparência"
+
+[node name="AppearanceHint" type="Label" parent="MarginContainer/PanelContainer/OuterVBox/ScrollContainer/VBoxContainer/AppearancePanel/AppearanceVBox"]
+layout_mode = 2
+autowrap_mode = 3
+text = "Placeholders simples com atualização em tempo real no preview."
+
+[node name="BodyTypeRow" type="HBoxContainer" parent="MarginContainer/PanelContainer/OuterVBox/ScrollContainer/VBoxContainer/AppearancePanel/AppearanceVBox"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="Label" type="Label" parent="MarginContainer/PanelContainer/OuterVBox/ScrollContainer/VBoxContainer/AppearancePanel/AppearanceVBox/BodyTypeRow"]
+layout_mode = 2
+custom_minimum_size = Vector2(130, 0)
+text = "Tipo visual"
+
+[node name="PrevButton" type="Button" parent="MarginContainer/PanelContainer/OuterVBox/ScrollContainer/VBoxContainer/AppearancePanel/AppearanceVBox/BodyTypeRow"]
+layout_mode = 2
+text = "<"
+
+[node name="ValueLabel" type="Label" parent="MarginContainer/PanelContainer/OuterVBox/ScrollContainer/VBoxContainer/AppearancePanel/AppearanceVBox/BodyTypeRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+horizontal_alignment = 1
+text = "Masculino"
+
+[node name="NextButton" type="Button" parent="MarginContainer/PanelContainer/OuterVBox/ScrollContainer/VBoxContainer/AppearancePanel/AppearanceVBox/BodyTypeRow"]
+layout_mode = 2
+text = ">"
+
+[node name="SkinToneRow" type="HBoxContainer" parent="MarginContainer/PanelContainer/OuterVBox/ScrollContainer/VBoxContainer/AppearancePanel/AppearanceVBox"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="Label" type="Label" parent="MarginContainer/PanelContainer/OuterVBox/ScrollContainer/VBoxContainer/AppearancePanel/AppearanceVBox/SkinToneRow"]
+layout_mode = 2
+custom_minimum_size = Vector2(130, 0)
+text = "Tom de pele"
+
+[node name="PrevButton" type="Button" parent="MarginContainer/PanelContainer/OuterVBox/ScrollContainer/VBoxContainer/AppearancePanel/AppearanceVBox/SkinToneRow"]
+layout_mode = 2
+text = "<"
+
+[node name="ValueLabel" type="Label" parent="MarginContainer/PanelContainer/OuterVBox/ScrollContainer/VBoxContainer/AppearancePanel/AppearanceVBox/SkinToneRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+horizontal_alignment = 1
+text = "Tom 3"
+
+[node name="NextButton" type="Button" parent="MarginContainer/PanelContainer/OuterVBox/ScrollContainer/VBoxContainer/AppearancePanel/AppearanceVBox/SkinToneRow"]
+layout_mode = 2
+text = ">"
+
+[node name="EyeColorRow" type="HBoxContainer" parent="MarginContainer/PanelContainer/OuterVBox/ScrollContainer/VBoxContainer/AppearancePanel/AppearanceVBox"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="Label" type="Label" parent="MarginContainer/PanelContainer/OuterVBox/ScrollContainer/VBoxContainer/AppearancePanel/AppearanceVBox/EyeColorRow"]
+layout_mode = 2
+custom_minimum_size = Vector2(130, 0)
+text = "Cor dos olhos"
+
+[node name="PrevButton" type="Button" parent="MarginContainer/PanelContainer/OuterVBox/ScrollContainer/VBoxContainer/AppearancePanel/AppearanceVBox/EyeColorRow"]
+layout_mode = 2
+text = "<"
+
+[node name="ValueLabel" type="Label" parent="MarginContainer/PanelContainer/OuterVBox/ScrollContainer/VBoxContainer/AppearancePanel/AppearanceVBox/EyeColorRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+horizontal_alignment = 1
+text = "Âmbar"
+
+[node name="NextButton" type="Button" parent="MarginContainer/PanelContainer/OuterVBox/ScrollContainer/VBoxContainer/AppearancePanel/AppearanceVBox/EyeColorRow"]
+layout_mode = 2
+text = ">"
+
+[node name="HairStyleRow" type="HBoxContainer" parent="MarginContainer/PanelContainer/OuterVBox/ScrollContainer/VBoxContainer/AppearancePanel/AppearanceVBox"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="Label" type="Label" parent="MarginContainer/PanelContainer/OuterVBox/ScrollContainer/VBoxContainer/AppearancePanel/AppearanceVBox/HairStyleRow"]
+layout_mode = 2
+custom_minimum_size = Vector2(130, 0)
+text = "Cabelo"
+
+[node name="PrevButton" type="Button" parent="MarginContainer/PanelContainer/OuterVBox/ScrollContainer/VBoxContainer/AppearancePanel/AppearanceVBox/HairStyleRow"]
+layout_mode = 2
+text = "<"
+
+[node name="ValueLabel" type="Label" parent="MarginContainer/PanelContainer/OuterVBox/ScrollContainer/VBoxContainer/AppearancePanel/AppearanceVBox/HairStyleRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+horizontal_alignment = 1
+text = "Curto"
+
+[node name="NextButton" type="Button" parent="MarginContainer/PanelContainer/OuterVBox/ScrollContainer/VBoxContainer/AppearancePanel/AppearanceVBox/HairStyleRow"]
+layout_mode = 2
+text = ">"
+
+[node name="HairColorRow" type="HBoxContainer" parent="MarginContainer/PanelContainer/OuterVBox/ScrollContainer/VBoxContainer/AppearancePanel/AppearanceVBox"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="Label" type="Label" parent="MarginContainer/PanelContainer/OuterVBox/ScrollContainer/VBoxContainer/AppearancePanel/AppearanceVBox/HairColorRow"]
+layout_mode = 2
+custom_minimum_size = Vector2(130, 0)
+text = "Cor do cabelo"
+
+[node name="PrevButton" type="Button" parent="MarginContainer/PanelContainer/OuterVBox/ScrollContainer/VBoxContainer/AppearancePanel/AppearanceVBox/HairColorRow"]
+layout_mode = 2
+text = "<"
+
+[node name="ValueLabel" type="Label" parent="MarginContainer/PanelContainer/OuterVBox/ScrollContainer/VBoxContainer/AppearancePanel/AppearanceVBox/HairColorRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+horizontal_alignment = 1
+text = "Preto"
+
+[node name="NextButton" type="Button" parent="MarginContainer/PanelContainer/OuterVBox/ScrollContainer/VBoxContainer/AppearancePanel/AppearanceVBox/HairColorRow"]
+layout_mode = 2
+text = ">"
+
+[node name="AuraRow" type="HBoxContainer" parent="MarginContainer/PanelContainer/OuterVBox/ScrollContainer/VBoxContainer/AppearancePanel/AppearanceVBox"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="Label" type="Label" parent="MarginContainer/PanelContainer/OuterVBox/ScrollContainer/VBoxContainer/AppearancePanel/AppearanceVBox/AuraRow"]
+layout_mode = 2
+custom_minimum_size = Vector2(130, 0)
+text = "Aura da classe"
+
+[node name="PrevButton" type="Button" parent="MarginContainer/PanelContainer/OuterVBox/ScrollContainer/VBoxContainer/AppearancePanel/AppearanceVBox/AuraRow"]
+layout_mode = 2
+text = "<"
+
+[node name="ValueLabel" type="Label" parent="MarginContainer/PanelContainer/OuterVBox/ScrollContainer/VBoxContainer/AppearancePanel/AppearanceVBox/AuraRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+horizontal_alignment = 1
+text = "Ativa"
+
+[node name="NextButton" type="Button" parent="MarginContainer/PanelContainer/OuterVBox/ScrollContainer/VBoxContainer/AppearancePanel/AppearanceVBox/AuraRow"]
+layout_mode = 2
+text = ">"
 
 [node name="Buttons" type="HBoxContainer" parent="MarginContainer/PanelContainer/OuterVBox"]
 layout_mode = 2
@@ -146,4 +318,16 @@ size_flags_horizontal = 3
 text = "Iniciar Jornada"
 
 [connection signal="pressed" from="MarginContainer/PanelContainer/OuterVBox/Buttons/BackButton" to="." method="_on_back_button_pressed"]
+[connection signal="pressed" from="MarginContainer/PanelContainer/OuterVBox/ScrollContainer/VBoxContainer/AppearancePanel/AppearanceVBox/AuraRow/NextButton" to="." method="_on_aura_next_pressed"]
+[connection signal="pressed" from="MarginContainer/PanelContainer/OuterVBox/ScrollContainer/VBoxContainer/AppearancePanel/AppearanceVBox/AuraRow/PrevButton" to="." method="_on_aura_prev_pressed"]
+[connection signal="pressed" from="MarginContainer/PanelContainer/OuterVBox/ScrollContainer/VBoxContainer/AppearancePanel/AppearanceVBox/BodyTypeRow/NextButton" to="." method="_on_body_type_next_pressed"]
+[connection signal="pressed" from="MarginContainer/PanelContainer/OuterVBox/ScrollContainer/VBoxContainer/AppearancePanel/AppearanceVBox/BodyTypeRow/PrevButton" to="." method="_on_body_type_prev_pressed"]
+[connection signal="pressed" from="MarginContainer/PanelContainer/OuterVBox/ScrollContainer/VBoxContainer/AppearancePanel/AppearanceVBox/EyeColorRow/NextButton" to="." method="_on_eye_color_next_pressed"]
+[connection signal="pressed" from="MarginContainer/PanelContainer/OuterVBox/ScrollContainer/VBoxContainer/AppearancePanel/AppearanceVBox/EyeColorRow/PrevButton" to="." method="_on_eye_color_prev_pressed"]
+[connection signal="pressed" from="MarginContainer/PanelContainer/OuterVBox/ScrollContainer/VBoxContainer/AppearancePanel/AppearanceVBox/HairColorRow/NextButton" to="." method="_on_hair_color_next_pressed"]
+[connection signal="pressed" from="MarginContainer/PanelContainer/OuterVBox/ScrollContainer/VBoxContainer/AppearancePanel/AppearanceVBox/HairColorRow/PrevButton" to="." method="_on_hair_color_prev_pressed"]
+[connection signal="pressed" from="MarginContainer/PanelContainer/OuterVBox/ScrollContainer/VBoxContainer/AppearancePanel/AppearanceVBox/HairStyleRow/NextButton" to="." method="_on_hair_style_next_pressed"]
+[connection signal="pressed" from="MarginContainer/PanelContainer/OuterVBox/ScrollContainer/VBoxContainer/AppearancePanel/AppearanceVBox/HairStyleRow/PrevButton" to="." method="_on_hair_style_prev_pressed"]
+[connection signal="pressed" from="MarginContainer/PanelContainer/OuterVBox/ScrollContainer/VBoxContainer/AppearancePanel/AppearanceVBox/SkinToneRow/NextButton" to="." method="_on_skin_tone_next_pressed"]
+[connection signal="pressed" from="MarginContainer/PanelContainer/OuterVBox/ScrollContainer/VBoxContainer/AppearancePanel/AppearanceVBox/SkinToneRow/PrevButton" to="." method="_on_skin_tone_prev_pressed"]
 [connection signal="pressed" from="MarginContainer/PanelContainer/OuterVBox/Buttons/StartButton" to="." method="_on_start_button_pressed"]
