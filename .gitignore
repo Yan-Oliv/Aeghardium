@@ -12,3 +12,12 @@ builds/android/*.aab
 # Sistema
 .DS_Store
 Thumbs.db
+
+# IDE
+.idea/
+
+# Artefatos de build/export
+builds/android/*.apk
+builds/android/*.aab
+builds/android/*.idsig
+builds/android/*.zip
