@@ -32,6 +32,8 @@ var active_timers: Dictionary = {}
 var base_stats: Dictionary = {}
 var spawn_position: Vector3 = Vector3.ZERO
 var appearance: Dictionary = {}
+var _missing_mobile_controls_logged: bool = false
+var _last_logged_mobile_vector: Vector2 = Vector2.ZERO
 
 func _ready() -> void:
 	combat.setup(self)
@@ -258,7 +260,7 @@ func _to_string_array(values: Variant) -> Array[String]:
 
 
 func _get_movement_input() -> Vector2:
-	var input_vector := Vector2.ZERO
+	var input_vector: Vector2 = Vector2.ZERO
 	input_vector.x = Input.get_action_strength("move_right") - Input.get_action_strength("move_left")
 	input_vector.y = Input.get_action_strength("move_backward") - Input.get_action_strength("move_forward")
 	if input_vector == Vector2.ZERO:
@@ -266,11 +268,23 @@ func _get_movement_input() -> Vector2:
 
 	var mobile_controls: Node = get_tree().get_first_node_in_group("mobile_controls")
 	if mobile_controls != null and mobile_controls.has_method("get_move_vector"):
-		var mobile_vector: Vector2 = mobile_controls.call("get_move_vector")
-		if mobile_vector.length() > 0.05:
-			input_vector = mobile_vector
+		var mobile_value: Variant = mobile_controls.call("get_move_vector")
+		if mobile_value is Vector2:
+			var mobile_vector: Vector2 = mobile_value
+			if mobile_vector.length() > 0.05:
+				if _last_logged_mobile_vector.distance_to(mobile_vector) >= 0.15:
+					print("[PlayerController] mobile_vector=", mobile_vector)
+					_last_logged_mobile_vector = mobile_vector
+				input_vector = mobile_vector
+			elif _last_logged_mobile_vector != Vector2.ZERO:
+				print("[PlayerController] mobile_vector=", mobile_vector)
+				_last_logged_mobile_vector = Vector2.ZERO
+		_missing_mobile_controls_logged = false
 	elif move_input.length() > 0.05:
 		input_vector = move_input
+	elif not _missing_mobile_controls_logged:
+		print("[PlayerController] mobile_controls not found")
+		_missing_mobile_controls_logged = true
 
 	if input_vector.length() > 1.0:
 		input_vector = input_vector.normalized()

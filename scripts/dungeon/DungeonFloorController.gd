@@ -40,11 +40,10 @@ func _ready() -> void:
 
 	_setup_player()
 	_refresh_info()
+	_configure_ui_input()
+	_connect_ui_signals()
+	_log_button_references()
 	if mobile_controls != null:
-		mobile_controls.move_input_changed.connect(_on_mobile_move_input_changed)
-		mobile_controls.camera_dragged.connect(_on_mobile_camera_dragged)
-		mobile_controls.interact_pressed.connect(_on_interact_pressed)
-		mobile_controls.menu_pressed.connect(_on_menu_pressed)
 		mobile_controls.set_interact_visible(false)
 
 	prompt_label.text = "Retornar para a Base?"
@@ -195,6 +194,7 @@ func _on_interact_pressed() -> void:
 
 
 func _on_menu_pressed() -> void:
+	print("[UI] Menu pressed")
 	GameManager.toggle_pause_menu()
 
 
@@ -210,8 +210,62 @@ func _on_mobile_camera_dragged(relative: Vector2) -> void:
 func _input(event: InputEvent) -> void:
 	if not is_instance_valid(player) or prompt_open:
 		return
-	if event is InputEventScreenDrag:
-		if event.position.x > get_viewport().get_visible_rect().size.x * 0.42:
-			player.add_camera_input(event.relative, true)
 	if event is InputEventMouseMotion and Input.is_action_pressed("camera_drag"):
 		player.add_camera_input(event.relative, false)
+
+
+func _connect_ui_signals() -> void:
+	if enter_button != null and not enter_button.pressed.is_connected(_on_enter_button_pressed):
+		enter_button.pressed.connect(_on_enter_button_pressed)
+	if cancel_button != null and not cancel_button.pressed.is_connected(_on_cancel_button_pressed):
+		cancel_button.pressed.connect(_on_cancel_button_pressed)
+	if mobile_controls != null:
+		if not mobile_controls.move_input_changed.is_connected(_on_mobile_move_input_changed):
+			mobile_controls.move_input_changed.connect(_on_mobile_move_input_changed)
+		if not mobile_controls.camera_dragged.is_connected(_on_mobile_camera_dragged):
+			mobile_controls.camera_dragged.connect(_on_mobile_camera_dragged)
+		if not mobile_controls.interact_pressed.is_connected(_on_interact_pressed):
+			mobile_controls.interact_pressed.connect(_on_interact_pressed)
+		if not mobile_controls.menu_pressed.is_connected(_on_menu_pressed):
+			mobile_controls.menu_pressed.connect(_on_menu_pressed)
+
+
+func _configure_ui_input() -> void:
+	if info_label != null:
+		info_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	if message_label != null:
+		message_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	if hint_label != null:
+		hint_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	if prompt_label != null:
+		prompt_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var info_panel: Control = get_node_or_null("DungeonUI/TopLeft/InfoPanel")
+	if info_panel != null:
+		info_panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	if prompt_panel != null:
+		prompt_panel.mouse_filter = Control.MOUSE_FILTER_STOP
+	var prompt_vbox: Control = get_node_or_null("DungeonUI/PromptPanel/PromptVBox")
+	if prompt_vbox != null:
+		prompt_vbox.mouse_filter = Control.MOUSE_FILTER_PASS
+	var prompt_buttons: Control = get_node_or_null("DungeonUI/PromptPanel/PromptVBox/PromptButtons")
+	if prompt_buttons != null:
+		prompt_buttons.mouse_filter = Control.MOUSE_FILTER_PASS
+	if enter_button != null:
+		enter_button.mouse_filter = Control.MOUSE_FILTER_STOP
+		enter_button.disabled = false
+		if not enter_button.is_in_group("ui_action_button"):
+			enter_button.add_to_group("ui_action_button")
+	if cancel_button != null:
+		cancel_button.mouse_filter = Control.MOUSE_FILTER_STOP
+		cancel_button.disabled = false
+		if not cancel_button.is_in_group("ui_action_button"):
+			cancel_button.add_to_group("ui_action_button")
+
+
+func _log_button_references() -> void:
+	var menu_button: Button = null
+	if mobile_controls != null:
+		menu_button = mobile_controls.get_node_or_null("TopRight/MenuButton") as Button
+	print("[UI] dungeon_menu_button=", menu_button)
+	print("[UI] dungeon_enter_button=", enter_button)
+	print("[UI] dungeon_cancel_button=", cancel_button)

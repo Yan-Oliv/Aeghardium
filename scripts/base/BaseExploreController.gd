@@ -9,13 +9,13 @@ const CHARACTER_PREVIEW_SCENE := preload("res://scenes/characters/CharacterPrevi
 @onready var info_label: RichTextLabel = $BaseUI/TopLeft/InfoPanel/InfoLabel
 @onready var message_label: Label = $BaseUI/BottomCenter/MessageLabel
 @onready var mobile_controls: MobileControls = $BaseUI/MobileControls
-@onready var rest_button: Button = $BaseUI/TopRight/Buttons/RestButton
-@onready var save_button: Button = $BaseUI/TopRight/Buttons/SaveButton
-@onready var title_button: Button = $BaseUI/TopRight/Buttons/TitleButton
+@onready var rest_button: Button = get_node_or_null("BaseUI/TopRight/Buttons/RestButton")
+@onready var save_button: Button = get_node_or_null("BaseUI/TopRight/Buttons/SaveButton")
+@onready var title_button: Button = get_node_or_null("BaseUI/TopRight/Buttons/TitleButton")
 @onready var prompt_panel: PanelContainer = $BaseUI/PromptPanel
 @onready var prompt_label: Label = $BaseUI/PromptPanel/PromptVBox/PromptLabel
-@onready var confirm_button: Button = $BaseUI/PromptPanel/PromptVBox/PromptButtons/EnterButton
-@onready var cancel_button: Button = $BaseUI/PromptPanel/PromptVBox/PromptButtons/CancelButton
+@onready var confirm_button: Button = get_node_or_null("BaseUI/PromptPanel/PromptVBox/PromptButtons/EnterButton")
+@onready var cancel_button: Button = get_node_or_null("BaseUI/PromptPanel/PromptVBox/PromptButtons/CancelButton")
 @onready var hint_label: Label = $BaseUI/BottomHint/HintLabel
 
 var move_input: Vector2 = Vector2.ZERO
@@ -43,15 +43,14 @@ func _ready() -> void:
 
 	_setup_player()
 	_refresh_info()
+	_configure_ui_input()
+	_connect_ui_signals()
+	_log_button_references()
 	prompt_label.text = "Entrar na Dungeon?"
 	if prompt_panel != null:
 		prompt_panel.visible = false
 	if mobile_controls != null:
 		mobile_controls.set_interact_visible(false)
-		mobile_controls.move_input_changed.connect(_on_mobile_move_input_changed)
-		mobile_controls.camera_dragged.connect(_on_mobile_camera_dragged)
-		mobile_controls.interact_pressed.connect(_on_interact_button_pressed)
-		mobile_controls.menu_pressed.connect(_on_menu_button_pressed)
 	message_label.modulate.a = 0.0
 	hint_label.text = "A fogueira marca seu retorno. A dungeon aguarda."
 
@@ -196,12 +195,15 @@ func _on_cancel_button_pressed() -> void:
 
 
 func _on_rest_button_pressed() -> void:
+	print("[UI] Rest pressed")
 	GameManager.rest_at_base()
 	_sync_local_resources_from_game_state()
 	_refresh_info()
+	show_message("Voce descansou.")
 
 
 func _on_save_button_pressed() -> void:
+	print("[UI] Save pressed")
 	if GameManager.save_current_game():
 		show_message("Progresso salvo localmente.")
 	else:
@@ -209,6 +211,7 @@ func _on_save_button_pressed() -> void:
 
 
 func _on_title_button_pressed() -> void:
+	print("[UI] Return title pressed")
 	GameManager.show_title()
 
 
@@ -227,14 +230,97 @@ func _on_mobile_camera_dragged(relative: Vector2) -> void:
 
 
 func _on_menu_button_pressed() -> void:
+	print("[UI] Menu pressed")
 	GameManager.toggle_pause_menu()
 
 
 func _input(event: InputEvent) -> void:
 	if not is_instance_valid(player) or prompt_open:
 		return
-	if event is InputEventScreenDrag:
-		if event.position.x > get_viewport().get_visible_rect().size.x * 0.42:
-			player.add_camera_input(event.relative, true)
 	if event is InputEventMouseMotion and Input.is_action_pressed("camera_drag"):
 		player.add_camera_input(event.relative, false)
+
+
+func _connect_ui_signals() -> void:
+	if rest_button != null and not rest_button.pressed.is_connected(_on_rest_button_pressed):
+		rest_button.pressed.connect(_on_rest_button_pressed)
+	if save_button != null and not save_button.pressed.is_connected(_on_save_button_pressed):
+		save_button.pressed.connect(_on_save_button_pressed)
+	if title_button != null and not title_button.pressed.is_connected(_on_title_button_pressed):
+		title_button.pressed.connect(_on_title_button_pressed)
+	if confirm_button != null and not confirm_button.pressed.is_connected(_on_enter_button_pressed):
+		confirm_button.pressed.connect(_on_enter_button_pressed)
+	if cancel_button != null and not cancel_button.pressed.is_connected(_on_cancel_button_pressed):
+		cancel_button.pressed.connect(_on_cancel_button_pressed)
+	if mobile_controls != null:
+		if not mobile_controls.move_input_changed.is_connected(_on_mobile_move_input_changed):
+			mobile_controls.move_input_changed.connect(_on_mobile_move_input_changed)
+		if not mobile_controls.camera_dragged.is_connected(_on_mobile_camera_dragged):
+			mobile_controls.camera_dragged.connect(_on_mobile_camera_dragged)
+		if not mobile_controls.interact_pressed.is_connected(_on_interact_button_pressed):
+			mobile_controls.interact_pressed.connect(_on_interact_button_pressed)
+		if not mobile_controls.menu_pressed.is_connected(_on_menu_button_pressed):
+			mobile_controls.menu_pressed.connect(_on_menu_button_pressed)
+
+
+func _configure_ui_input() -> void:
+	if info_label != null:
+		info_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	if message_label != null:
+		message_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	if hint_label != null:
+		hint_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	if prompt_label != null:
+		prompt_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var info_panel: Control = get_node_or_null("BaseUI/TopLeft/InfoPanel")
+	if info_panel != null:
+		info_panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var top_right: Control = get_node_or_null("BaseUI/TopRight")
+	if top_right != null:
+		top_right.mouse_filter = Control.MOUSE_FILTER_PASS
+	var buttons_box: Control = get_node_or_null("BaseUI/TopRight/Buttons")
+	if buttons_box != null:
+		buttons_box.mouse_filter = Control.MOUSE_FILTER_PASS
+	if rest_button != null:
+		rest_button.mouse_filter = Control.MOUSE_FILTER_STOP
+		rest_button.disabled = false
+		if not rest_button.is_in_group("ui_action_button"):
+			rest_button.add_to_group("ui_action_button")
+	if save_button != null:
+		save_button.mouse_filter = Control.MOUSE_FILTER_STOP
+		save_button.disabled = false
+		if not save_button.is_in_group("ui_action_button"):
+			save_button.add_to_group("ui_action_button")
+	if title_button != null:
+		title_button.mouse_filter = Control.MOUSE_FILTER_STOP
+		title_button.disabled = false
+		if not title_button.is_in_group("ui_action_button"):
+			title_button.add_to_group("ui_action_button")
+	if prompt_panel != null:
+		prompt_panel.mouse_filter = Control.MOUSE_FILTER_STOP
+	var prompt_vbox: Control = get_node_or_null("BaseUI/PromptPanel/PromptVBox")
+	if prompt_vbox != null:
+		prompt_vbox.mouse_filter = Control.MOUSE_FILTER_PASS
+	var prompt_buttons: Control = get_node_or_null("BaseUI/PromptPanel/PromptVBox/PromptButtons")
+	if prompt_buttons != null:
+		prompt_buttons.mouse_filter = Control.MOUSE_FILTER_PASS
+	if confirm_button != null:
+		confirm_button.mouse_filter = Control.MOUSE_FILTER_STOP
+		if not confirm_button.is_in_group("ui_action_button"):
+			confirm_button.add_to_group("ui_action_button")
+	if cancel_button != null:
+		cancel_button.mouse_filter = Control.MOUSE_FILTER_STOP
+		if not cancel_button.is_in_group("ui_action_button"):
+			cancel_button.add_to_group("ui_action_button")
+
+
+func _log_button_references() -> void:
+	var menu_button: Button = null
+	if mobile_controls != null:
+		menu_button = mobile_controls.get_node_or_null("TopRight/MenuButton") as Button
+	print("[UI] menu_button=", menu_button)
+	print("[UI] rest_button=", rest_button)
+	print("[UI] save_button=", save_button)
+	print("[UI] title_button=", title_button)
+	print("[UI] enter_button=", confirm_button)
+	print("[UI] cancel_button=", cancel_button)
