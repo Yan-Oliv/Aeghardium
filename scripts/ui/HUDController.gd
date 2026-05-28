@@ -146,6 +146,6 @@ func _unhandled_input(event: InputEvent) -> void:
 		return
 	if event is InputEventScreenDrag:
 		if event.position.x > size.x * 0.4:
-			player.add_camera_input(event.relative)
+			player.add_camera_input(event.relative, true)
 	if event is InputEventMouseMotion and Input.is_action_pressed("camera_drag"):
-		player.add_camera_input(event.relative)
+		player.add_camera_input(event.relative, false)

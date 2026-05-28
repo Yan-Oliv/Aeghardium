@@ -1,8 +1,9 @@
-[gd_scene load_steps=27 format=3]
+[gd_scene load_steps=32 format=3]
 
 [ext_resource type="PackedScene" path="res://scenes/player/Player.tscn" id="1"]
 [ext_resource type="Script" path="res://scripts/dungeon/DungeonFloorController.gd" id="2"]
 [ext_resource type="PackedScene" path="res://scenes/ui/MobileControls.tscn" id="3"]
+[ext_resource type="Script" path="res://scripts/world/SkyController.gd" id="4"]
 
 [sub_resource type="BoxMesh" id="1"]
 size = Vector3(18, 1, 34)
@@ -86,6 +87,25 @@ emission = Color(0.88, 0.61, 0.26, 1)
 emission_energy_multiplier = 1.0
 roughness = 0.30
 
+[sub_resource type="BoxMesh" id="17"]
+size = Vector3(1.4, 1.0, 1.0)
+
+[sub_resource type="CylinderMesh" id="18"]
+top_radius = 0.16
+bottom_radius = 0.22
+height = 2.8
+
+[sub_resource type="SphereMesh" id="19"]
+radius = 0.16
+height = 0.32
+
+[sub_resource type="StandardMaterial3D" id="20"]
+albedo_color = Color(0.86, 0.65, 0.28, 1)
+emission_enabled = true
+emission = Color(1, 0.68, 0.26, 1)
+emission_energy_multiplier = 1.2
+roughness = 0.28
+
 [node name="DungeonFloor01" type="Node3D"]
 script = ExtResource("2")
 
@@ -97,6 +117,12 @@ rotation_degrees = Vector3(-52, 22, 0)
 light_color = Color(0.62, 0.70, 0.82, 1)
 light_energy = 0.84
 shadow_enabled = true
+
+[node name="SkyController" type="Node" parent="."]
+script = ExtResource("4")
+quality_preset = 1
+enable_weather = false
+interior_mode = true
 
 [node name="FogFill" type="OmniLight3D" parent="."]
 position = Vector3(0, 2.1, -8)
@@ -170,6 +196,56 @@ material_override = SubResource("5")
 position = Vector3(6.0, 4.3, -8.6)
 mesh = SubResource("11")
 material_override = SubResource("3")
+
+[node name="PillarA" type="MeshInstance3D" parent="."]
+position = Vector3(-4.1, 1.4, 2.8)
+mesh = SubResource("18")
+material_override = SubResource("5")
+
+[node name="PillarB" type="MeshInstance3D" parent="."]
+position = Vector3(4.2, 1.4, -1.2)
+mesh = SubResource("18")
+material_override = SubResource("5")
+
+[node name="TorchLeftStem" type="MeshInstance3D" parent="."]
+position = Vector3(-6.9, 1.5, 5.8)
+rotation_degrees = Vector3(0, 0, 14)
+mesh = SubResource("18")
+material_override = SubResource("5")
+
+[node name="TorchLeftFlame" type="MeshInstance3D" parent="."]
+position = Vector3(-6.65, 2.75, 5.8)
+mesh = SubResource("19")
+material_override = SubResource("20")
+
+[node name="TorchLeftLight" type="OmniLight3D" parent="."]
+position = Vector3(-6.65, 2.7, 5.8)
+light_color = Color(1, 0.64, 0.32, 1)
+light_energy = 1.25
+omni_range = 6.0
+
+[node name="TorchRightStem" type="MeshInstance3D" parent="."]
+position = Vector3(6.9, 1.5, 1.8)
+rotation_degrees = Vector3(0, 0, -14)
+mesh = SubResource("18")
+material_override = SubResource("5")
+
+[node name="TorchRightFlame" type="MeshInstance3D" parent="."]
+position = Vector3(6.65, 2.75, 1.8)
+mesh = SubResource("19")
+material_override = SubResource("20")
+
+[node name="TorchRightLight" type="OmniLight3D" parent="."]
+position = Vector3(6.65, 2.7, 1.8)
+light_color = Color(1, 0.64, 0.32, 1)
+light_energy = 1.25
+omni_range = 6.0
+
+[node name="ChestPlaceholder" type="MeshInstance3D" parent="."]
+position = Vector3(-2.4, 0.55, -10.5)
+rotation_degrees = Vector3(0, 24, 0)
+mesh = SubResource("17")
+material_override = SubResource("20")
 
 [node name="ExitPortalFrame" type="MeshInstance3D" parent="."]
 position = Vector3(0, 1.8, 12.0)

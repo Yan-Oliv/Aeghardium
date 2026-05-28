@@ -223,18 +223,18 @@ func _on_mobile_move_input_changed(value: Vector2) -> void:
 
 func _on_mobile_camera_dragged(relative: Vector2) -> void:
 	if not prompt_open:
-		player.add_camera_input(relative)
+		player.add_camera_input(relative, true)
 
 
 func _on_menu_button_pressed() -> void:
 	GameManager.toggle_pause_menu()
 
 
-func _unhandled_input(event: InputEvent) -> void:
+func _input(event: InputEvent) -> void:
 	if not is_instance_valid(player) or prompt_open:
 		return
 	if event is InputEventScreenDrag:
 		if event.position.x > get_viewport().get_visible_rect().size.x * 0.42:
-			player.add_camera_input(event.relative)
+			player.add_camera_input(event.relative, true)
 	if event is InputEventMouseMotion and Input.is_action_pressed("camera_drag"):
-		player.add_camera_input(event.relative)
+		player.add_camera_input(event.relative, false)

@@ -4,9 +4,11 @@ class_name PlayerController
 @export var walk_speed: float = 4.2
 @export var run_speed: float = 6.0
 @export var acceleration: float = 12.0
-@export var rotation_speed: float = 10.0
+@export var player_rotation_speed: float = 6.5
 @export var gravity: float = 22.0
-@export var camera_sensitivity: float = 0.012
+@export var mouse_camera_sensitivity: float = 0.0010
+@export var touch_camera_sensitivity: float = 0.00055
+@export var camera_smoothing: float = 8.0
 
 @onready var stats: PlayerStats = $Stats
 @onready var combat: PlayerCombat = $Combat
@@ -22,6 +24,8 @@ var player_name: String = "Desperto"
 var move_input: Vector2 = Vector2.ZERO
 var camera_pitch: float = -0.35
 var camera_yaw: float = 0.0
+var target_camera_pitch: float = -0.35
+var target_camera_yaw: float = 0.0
 var is_dead: bool = false
 var invisible_until: float = 0.0
 var active_timers: Dictionary = {}
@@ -35,6 +39,15 @@ func _ready() -> void:
 	stats.damaged.connect(_on_damaged)
 	if not is_in_group("player_controller"):
 		add_to_group("player_controller")
+	target_camera_pitch = camera_pitch
+	target_camera_yaw = camera_yaw
+	_update_camera_pivot()
+
+
+func _process(delta: float) -> void:
+	var weight: float = clampf(camera_smoothing * delta, 0.0, 1.0)
+	camera_yaw = lerp_angle(camera_yaw, target_camera_yaw, weight)
+	camera_pitch = lerpf(camera_pitch, target_camera_pitch, weight)
 	_update_camera_pivot()
 
 
@@ -96,10 +109,14 @@ func set_move_input(value: Vector2) -> void:
 	move_input = value
 
 
-func add_camera_input(relative: Vector2) -> void:
-	camera_yaw -= relative.x * camera_sensitivity / 0.012
-	camera_pitch = clampf(camera_pitch - relative.y * camera_sensitivity / 0.012, -0.9, 0.15)
-	_update_camera_pivot()
+func add_camera_input(relative: Vector2, is_touch_input: bool = false) -> void:
+	var sensitivity: float = touch_camera_sensitivity if is_touch_input else mouse_camera_sensitivity
+	target_camera_yaw -= relative.x * sensitivity
+	target_camera_pitch = clampf(
+		target_camera_pitch - relative.y * sensitivity,
+		deg_to_rad(-35.0),
+		deg_to_rad(55.0)
+	)
 
 
 func request_basic_attack() -> void:
@@ -190,7 +207,7 @@ func _handle_movement(delta: float) -> void:
 		velocity.x = move_toward(velocity.x, target_velocity.x, acceleration * delta)
 		velocity.z = move_toward(velocity.z, target_velocity.z, acceleration * delta)
 		var target_yaw: float = atan2(-direction.x, -direction.z)
-		rotation.y = lerp_angle(rotation.y, target_yaw, clampf(rotation_speed * delta, 0.0, 1.0))
+		rotation.y = lerp_angle(rotation.y, target_yaw, clampf(player_rotation_speed * delta, 0.0, 1.0))
 	else:
 		velocity.x = move_toward(velocity.x, 0.0, acceleration * delta)
 		velocity.z = move_toward(velocity.z, 0.0, acceleration * delta)
@@ -266,11 +283,7 @@ func _input_to_world_direction(input_vector: Vector2) -> Vector3:
 
 	var forward: Vector3 = -global_transform.basis.z
 	var right: Vector3 = global_transform.basis.x
-	var active_camera: Camera3D = get_viewport().get_camera_3d()
-	if active_camera != null:
-		forward = -active_camera.global_transform.basis.z
-		right = active_camera.global_transform.basis.x
-	elif pivot != null:
+	if pivot != null:
 		forward = -pivot.global_transform.basis.z
 		right = pivot.global_transform.basis.x
 
