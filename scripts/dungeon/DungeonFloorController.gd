@@ -43,6 +43,7 @@ func _ready() -> void:
 	_configure_ui_input()
 	_connect_ui_signals()
 	_log_button_references()
+	call_deferred("_connect_mobile_camera")
 	if mobile_controls != null:
 		mobile_controls.set_interact_visible(false)
 
@@ -203,8 +204,12 @@ func _on_mobile_move_input_changed(value: Vector2) -> void:
 
 
 func _on_mobile_camera_dragged(relative: Vector2) -> void:
+	print("[MobileCamera] drag received=", relative)
 	if not prompt_open:
-		player.add_camera_input(relative, true)
+		if player != null and player.has_method("add_camera_input"):
+			player.add_camera_input(relative, true)
+		else:
+			print("[MobileCamera] player missing or has no add_camera_input")
 
 
 func _input(event: InputEvent) -> void:
@@ -222,12 +227,24 @@ func _connect_ui_signals() -> void:
 	if mobile_controls != null:
 		if not mobile_controls.move_input_changed.is_connected(_on_mobile_move_input_changed):
 			mobile_controls.move_input_changed.connect(_on_mobile_move_input_changed)
-		if not mobile_controls.camera_dragged.is_connected(_on_mobile_camera_dragged):
-			mobile_controls.camera_dragged.connect(_on_mobile_camera_dragged)
 		if not mobile_controls.interact_pressed.is_connected(_on_interact_pressed):
 			mobile_controls.interact_pressed.connect(_on_interact_pressed)
 		if not mobile_controls.menu_pressed.is_connected(_on_menu_pressed):
 			mobile_controls.menu_pressed.connect(_on_menu_pressed)
+
+
+func _connect_mobile_camera() -> void:
+	var controls: Node = get_tree().get_first_node_in_group("mobile_controls")
+	print("[MobileCamera] mobile_controls=", controls)
+	if controls == null:
+		return
+	if controls.has_signal("camera_dragged"):
+		var callable := Callable(self, "_on_mobile_camera_dragged")
+		if not controls.is_connected("camera_dragged", callable):
+			controls.connect("camera_dragged", callable)
+			print("[MobileCamera] camera_dragged connected")
+	else:
+		print("[MobileCamera] mobile_controls has no camera_dragged signal")
 
 
 func _configure_ui_input() -> void:

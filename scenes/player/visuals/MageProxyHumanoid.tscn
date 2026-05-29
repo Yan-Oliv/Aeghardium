@@ -1,0 +1,182 @@
+[gd_scene load_steps=19 format=3]
+
+[sub_resource type="StandardMaterial3D" id="1"]
+albedo_color = Color(0.16, 0.12, 0.32, 1)
+
+[sub_resource type="StandardMaterial3D" id="2"]
+albedo_color = Color(0.76, 0.66, 0.58, 1)
+
+[sub_resource type="StandardMaterial3D" id="3"]
+albedo_color = Color(0.46, 0.78, 1.0, 1)
+emission_enabled = true
+emission = Color(0.25, 0.62, 1, 1)
+emission_energy_multiplier = 0.45
+
+[sub_resource type="StandardMaterial3D" id="4"]
+albedo_color = Color(0.52, 0.34, 0.82, 1)
+
+[sub_resource type="StandardMaterial3D" id="5"]
+albedo_color = Color(0.20, 0.16, 0.28, 1)
+
+[sub_resource type="StandardMaterial3D" id="6"]
+albedo_color = Color(0.38, 0.25, 0.15, 1)
+
+[sub_resource type="StandardMaterial3D" id="7"]
+transparency = 1
+albedo_color = Color(0.22, 0.55, 1, 0.30)
+emission_enabled = true
+emission = Color(0.20, 0.55, 1, 1)
+emission_energy_multiplier = 1.2
+
+[sub_resource type="StandardMaterial3D" id="8"]
+transparency = 1
+albedo_color = Color(1, 0.22, 0.02, 0.42)
+emission_enabled = true
+emission = Color(1, 0.16, 0.02, 1)
+emission_energy_multiplier = 1.4
+
+[sub_resource type="StandardMaterial3D" id="9"]
+transparency = 1
+albedo_color = Color(0.20, 0.52, 1, 0.32)
+
+[sub_resource type="BoxMesh" id="10"]
+size = Vector3(0.42, 0.96, 0.28)
+
+[sub_resource type="BoxMesh" id="11"]
+size = Vector3(0.72, 0.74, 0.34)
+
+[sub_resource type="SphereMesh" id="12"]
+radius = 0.20
+height = 0.40
+
+[sub_resource type="BoxMesh" id="13"]
+size = Vector3(0.14, 1.08, 0.12)
+
+[sub_resource type="BoxMesh" id="14"]
+size = Vector3(0.16, 0.84, 0.14)
+
+[sub_resource type="CylinderMesh" id="15"]
+top_radius = 0.035
+bottom_radius = 0.045
+height = 1.65
+
+[sub_resource type="SphereMesh" id="16"]
+radius = 0.13
+height = 0.26
+
+[sub_resource type="TorusMesh" id="17"]
+inner_radius = 0.06
+outer_radius = 0.74
+ring_sides = 8
+rings = 28
+
+[sub_resource type="CapsuleMesh" id="18"]
+radius = 0.44
+mid_height = 1.28
+
+[node name="MageProxyHumanoid" type="Node3D"]
+
+[node name="Body" type="MeshInstance3D" parent="."]
+position = Vector3(0, 1.08, 0)
+scale = Vector3(0.86, 1.10, 0.90)
+mesh = SubResource("10")
+material_override = SubResource("1")
+
+[node name="RobeLower" type="MeshInstance3D" parent="."]
+position = Vector3(0, 0.58, 0)
+mesh = SubResource("11")
+material_override = SubResource("1")
+
+[node name="Head" type="MeshInstance3D" parent="."]
+position = Vector3(0, 1.72, 0)
+mesh = SubResource("12")
+material_override = SubResource("2")
+
+[node name="HairBack" type="MeshInstance3D" parent="."]
+position = Vector3(0, 1.20, -0.16)
+scale = Vector3(1.0, 1.32, 0.42)
+mesh = SubResource("13")
+material_override = SubResource("3")
+
+[node name="HairLeft" type="MeshInstance3D" parent="."]
+position = Vector3(-0.16, 1.34, -0.08)
+scale = Vector3(0.62, 1.10, 0.38)
+mesh = SubResource("13")
+material_override = SubResource("3")
+
+[node name="HairRight" type="MeshInstance3D" parent="."]
+position = Vector3(0.16, 1.34, -0.08)
+scale = Vector3(0.62, 1.10, 0.38)
+mesh = SubResource("13")
+material_override = SubResource("3")
+
+[node name="LeftArm" type="MeshInstance3D" parent="."]
+position = Vector3(-0.38, 1.04, 0.02)
+scale = Vector3(0.72, 1.0, 0.72)
+mesh = SubResource("14")
+material_override = SubResource("4")
+
+[node name="RightArm" type="MeshInstance3D" parent="."]
+position = Vector3(0.38, 1.04, 0.02)
+scale = Vector3(0.72, 1.0, 0.72)
+mesh = SubResource("14")
+material_override = SubResource("4")
+
+[node name="LeftLeg" type="MeshInstance3D" parent="."]
+position = Vector3(-0.12, 0.42, 0)
+scale = Vector3(0.72, 1.0, 0.72)
+mesh = SubResource("14")
+material_override = SubResource("5")
+
+[node name="RightLeg" type="MeshInstance3D" parent="."]
+position = Vector3(0.12, 0.42, 0)
+scale = Vector3(0.72, 1.0, 0.72)
+mesh = SubResource("14")
+material_override = SubResource("5")
+
+[node name="StaffRoot" type="Node3D" parent="."]
+position = Vector3(-0.52, 0.92, 0.04)
+rotation_degrees = Vector3(0, 0, -8)
+
+[node name="StaffMain" type="MeshInstance3D" parent="StaffRoot"]
+position = Vector3(0, 0.48, 0)
+mesh = SubResource("15")
+material_override = SubResource("6")
+
+[node name="StaffCrystal" type="MeshInstance3D" parent="StaffRoot"]
+position = Vector3(0, 1.30, 0)
+scale = Vector3(0.75, 1.15, 0.75)
+mesh = SubResource("16")
+material_override = SubResource("7")
+
+[node name="AuraRoot" type="Node3D" parent="."]
+
+[node name="FloorAura" type="MeshInstance3D" parent="AuraRoot"]
+position = Vector3(0, 0.04, 0)
+rotation_degrees = Vector3(90, 0, 0)
+mesh = SubResource("17")
+material_override = SubResource("7")
+
+[node name="AuraOrbA" type="MeshInstance3D" parent="AuraRoot"]
+position = Vector3(-0.62, 1.16, 0.12)
+scale = Vector3(0.42, 0.42, 0.42)
+mesh = SubResource("16")
+material_override = SubResource("7")
+
+[node name="AuraOrbB" type="MeshInstance3D" parent="AuraRoot"]
+position = Vector3(0.54, 1.48, -0.08)
+scale = Vector3(0.32, 0.32, 0.32)
+mesh = SubResource("16")
+material_override = SubResource("7")
+
+[node name="BurningEffect" type="MeshInstance3D" parent="."]
+visible = false
+position = Vector3(0, 0.92, 0)
+mesh = SubResource("18")
+material_override = SubResource("8")
+
+[node name="WetEffect" type="MeshInstance3D" parent="."]
+visible = false
+position = Vector3(0, 0.92, 0)
+mesh = SubResource("18")
+material_override = SubResource("9")

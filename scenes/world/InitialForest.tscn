@@ -62,6 +62,9 @@ scale_min = 0.2
 scale_max = 0.35
 color = Color(0.93, 0.92, 0.66, 0.45)
 
+[sub_resource type="BoxShape3D" id="12"]
+size = Vector3(5.0, 2.4, 1.6)
+
 [node name="InitialForest" type="Node3D"]
 script = ExtResource("5")
 
@@ -77,6 +80,9 @@ shadow_enabled = true
 script = ExtResource("7")
 
 [node name="Ground" type="StaticBody3D" parent="."]
+position = Vector3(0, -0.5, 0)
+collision_layer = 1
+collision_mask = 2
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="Ground"]
 mesh = SubResource("1")
@@ -93,6 +99,8 @@ material_override = SubResource("8")
 
 [node name="TreeA" type="StaticBody3D" parent="."]
 position = Vector3(-6, 2, -3)
+collision_layer = 1
+collision_mask = 2
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="TreeA"]
 mesh = SubResource("3")
@@ -103,6 +111,8 @@ shape = SubResource("4")
 
 [node name="TreeB" type="StaticBody3D" parent="."]
 position = Vector3(6, 2, 2)
+collision_layer = 1
+collision_mask = 2
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="TreeB"]
 mesh = SubResource("3")
@@ -121,6 +131,8 @@ shape = SubResource("4")
 
 [node name="LoreStone" type="Area3D" parent="."]
 position = Vector3(-2.5, 1.0, 3.5)
+collision_layer = 4
+collision_mask = 2
 script = ExtResource("6")
 message = "Raizes brancas brotam da terra como ossos. O Colosso ainda respira, mas cada folha sua carrega veneno."
 
@@ -129,17 +141,27 @@ shape = SubResource("5")
 
 [node name="PortalBlock" type="Area3D" parent="."]
 position = Vector3(0, 1.0, -14)
+collision_layer = 4
+collision_mask = 2
 script = ExtResource("6")
 message = "Um selo antigo bloqueia a passagem. Outros biomas virao depois."
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="PortalBlock"]
 shape = SubResource("5")
 
+[node name="PortalBarrier" type="StaticBody3D" parent="."]
+position = Vector3(0, 1.2, -14)
+collision_layer = 1
+collision_mask = 2
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="PortalBarrier"]
+shape = SubResource("12")
+
 [node name="SpawnPoint" type="Marker3D" parent="."]
-position = Vector3(0, 0.5, 6)
+position = Vector3(0, 0, 6)
 
 [node name="Player" parent="." instance=ExtResource("1")]
-position = Vector3(0, 0.5, 6)
+position = Vector3(0, 0, 6)
 
 [node name="SlimeA" parent="." instance=ExtResource("2")]
 position = Vector3(-3, 0.7, 0)

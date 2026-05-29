@@ -1,9 +1,10 @@
-[gd_scene load_steps=32 format=3]
+[gd_scene load_steps=41 format=3]
 
 [ext_resource type="PackedScene" path="res://scenes/player/Player.tscn" id="1"]
 [ext_resource type="Script" path="res://scripts/dungeon/DungeonFloorController.gd" id="2"]
 [ext_resource type="PackedScene" path="res://scenes/ui/MobileControls.tscn" id="3"]
 [ext_resource type="Script" path="res://scripts/world/SkyController.gd" id="4"]
+[ext_resource type="Script" path="res://scripts/world/EnvironmentalArea.gd" id="5"]
 
 [sub_resource type="BoxMesh" id="1"]
 size = Vector3(18, 1, 34)
@@ -106,6 +107,60 @@ emission = Color(1, 0.68, 0.26, 1)
 emission_energy_multiplier = 1.2
 roughness = 0.28
 
+[sub_resource type="CylinderShape3D" id="21"]
+radius = 1.0
+height = 3.4
+
+[sub_resource type="CylinderShape3D" id="22"]
+radius = 0.35
+height = 2.8
+
+[sub_resource type="BoxShape3D" id="23"]
+size = Vector3(1.4, 1.0, 1.0)
+
+[sub_resource type="StandardMaterial3D" id="24"]
+albedo_color = Color(0.98, 0.30, 0.14, 0.34)
+emission_enabled = true
+emission = Color(1, 0.36, 0.12, 1)
+emission_energy_multiplier = 0.7
+roughness = 0.42
+transparency = 1
+
+[sub_resource type="StandardMaterial3D" id="25"]
+albedo_color = Color(0.18, 0.42, 0.70, 0.26)
+emission_enabled = true
+emission = Color(0.18, 0.38, 0.58, 1)
+emission_energy_multiplier = 0.24
+roughness = 0.18
+transparency = 1
+
+[sub_resource type="StandardMaterial3D" id="26"]
+albedo_color = Color(0.34, 0.42, 0.18, 0.34)
+emission_enabled = true
+emission = Color(0.44, 0.52, 0.22, 1)
+emission_energy_multiplier = 0.18
+roughness = 0.7
+transparency = 1
+
+[sub_resource type="CylinderMesh" id="27"]
+top_radius = 0.95
+bottom_radius = 0.95
+height = 0.05
+
+[sub_resource type="CylinderMesh" id="28"]
+top_radius = 1.15
+bottom_radius = 1.15
+height = 0.05
+
+[sub_resource type="BoxMesh" id="29"]
+size = Vector3(2.8, 0.05, 2.4)
+
+[sub_resource type="SphereShape3D" id="30"]
+radius = 1.1
+
+[sub_resource type="BoxShape3D" id="31"]
+size = Vector3(2.8, 1.0, 2.4)
+
 [node name="DungeonFloor01" type="Node3D"]
 script = ExtResource("2")
 
@@ -131,6 +186,9 @@ light_energy = 0.42
 omni_range = 12.0
 
 [node name="Ground" type="StaticBody3D" parent="."]
+position = Vector3(0, -0.5, 0)
+collision_layer = 1
+collision_mask = 2
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="Ground"]
 mesh = SubResource("1")
@@ -147,24 +205,32 @@ material_override = SubResource("5")
 
 [node name="NorthWall" type="StaticBody3D" parent="."]
 position = Vector3(0, 2, -16.8)
+collision_layer = 1
+collision_mask = 2
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="NorthWall"]
 shape = SubResource("6")
 
 [node name="SouthWall" type="StaticBody3D" parent="."]
 position = Vector3(0, 2, 16.8)
+collision_layer = 1
+collision_mask = 2
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="SouthWall"]
 shape = SubResource("6")
 
 [node name="WestWall" type="StaticBody3D" parent="."]
 position = Vector3(-8.8, 2, 0)
+collision_layer = 1
+collision_mask = 2
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="WestWall"]
 shape = SubResource("7")
 
 [node name="EastWall" type="StaticBody3D" parent="."]
 position = Vector3(8.8, 2, 0)
+collision_layer = 1
+collision_mask = 2
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="EastWall"]
 shape = SubResource("7")
@@ -177,6 +243,51 @@ draw_pass_1 = SubResource("9")
 process_material = SubResource("14")
 emitting = true
 
+[node name="FirePatchArea" type="Area3D" parent="."]
+position = Vector3(-2.8, 0.2, 6.2)
+script = ExtResource("5")
+environment_type = "fire"
+status_duration = 3.0
+tick_interval = 1.0
+damage_per_tick = 2
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="FirePatchArea"]
+position = Vector3(0, -0.17, 0)
+mesh = SubResource("27")
+material_override = SubResource("24")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="FirePatchArea"]
+shape = SubResource("30")
+
+[node name="WaterPuddleArea" type="Area3D" parent="."]
+position = Vector3(2.6, 0.18, 6.0)
+script = ExtResource("5")
+environment_type = "water"
+status_duration = 4.0
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="WaterPuddleArea"]
+position = Vector3(0, -0.16, 0)
+mesh = SubResource("28")
+material_override = SubResource("25")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="WaterPuddleArea"]
+shape = SubResource("30")
+
+[node name="SwampPatchArea" type="Area3D" parent="."]
+position = Vector3(0, 0.18, 8.4)
+script = ExtResource("5")
+environment_type = "swamp"
+status_duration = -1.0
+slow_multiplier = 0.6
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="SwampPatchArea"]
+position = Vector3(0, -0.16, 0)
+mesh = SubResource("29")
+material_override = SubResource("26")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="SwampPatchArea"]
+shape = SubResource("31")
+
 [node name="TreeA" type="MeshInstance3D" parent="."]
 position = Vector3(-6.2, 1.7, -5.2)
 mesh = SubResource("10")
@@ -186,6 +297,14 @@ material_override = SubResource("5")
 position = Vector3(-6.2, 4.2, -5.2)
 mesh = SubResource("11")
 material_override = SubResource("3")
+
+[node name="TreeABody" type="StaticBody3D" parent="."]
+position = Vector3(-6.2, 1.7, -5.2)
+collision_layer = 1
+collision_mask = 2
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="TreeABody"]
+shape = SubResource("21")
 
 [node name="TreeB" type="MeshInstance3D" parent="."]
 position = Vector3(6.0, 1.7, -8.6)
@@ -197,15 +316,39 @@ position = Vector3(6.0, 4.3, -8.6)
 mesh = SubResource("11")
 material_override = SubResource("3")
 
+[node name="TreeBBody" type="StaticBody3D" parent="."]
+position = Vector3(6.0, 1.7, -8.6)
+collision_layer = 1
+collision_mask = 2
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="TreeBBody"]
+shape = SubResource("21")
+
 [node name="PillarA" type="MeshInstance3D" parent="."]
 position = Vector3(-4.1, 1.4, 2.8)
 mesh = SubResource("18")
 material_override = SubResource("5")
 
+[node name="PillarABody" type="StaticBody3D" parent="."]
+position = Vector3(-4.1, 1.4, 2.8)
+collision_layer = 1
+collision_mask = 2
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="PillarABody"]
+shape = SubResource("22")
+
 [node name="PillarB" type="MeshInstance3D" parent="."]
 position = Vector3(4.2, 1.4, -1.2)
 mesh = SubResource("18")
 material_override = SubResource("5")
+
+[node name="PillarBBody" type="StaticBody3D" parent="."]
+position = Vector3(4.2, 1.4, -1.2)
+collision_layer = 1
+collision_mask = 2
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="PillarBBody"]
+shape = SubResource("22")
 
 [node name="TorchLeftStem" type="MeshInstance3D" parent="."]
 position = Vector3(-6.9, 1.5, 5.8)
@@ -247,6 +390,14 @@ rotation_degrees = Vector3(0, 24, 0)
 mesh = SubResource("17")
 material_override = SubResource("20")
 
+[node name="ChestBody" type="StaticBody3D" parent="."]
+position = Vector3(-2.4, 0.55, -10.5)
+collision_layer = 1
+collision_mask = 2
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="ChestBody"]
+shape = SubResource("23")
+
 [node name="ExitPortalFrame" type="MeshInstance3D" parent="."]
 position = Vector3(0, 1.8, 12.0)
 mesh = SubResource("12")
@@ -260,6 +411,8 @@ material_override = SubResource("16")
 
 [node name="ExitPortal" type="Area3D" parent="."]
 position = Vector3(0, 1.4, 12.0)
+collision_layer = 4
+collision_mask = 2
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="ExitPortal"]
 shape = SubResource("8")
@@ -283,15 +436,17 @@ modulate = Color(0.78, 0.96, 0.72, 1)
 
 [node name="EnemyTrigger" type="Area3D" parent="."]
 position = Vector3(0, 0.9, -3.6)
+collision_layer = 4
+collision_mask = 2
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="EnemyTrigger"]
 shape = SubResource("8")
 
 [node name="SpawnPoint" type="Marker3D" parent="."]
-position = Vector3(0, 0.5, 13.0)
+position = Vector3(0, 0, 13.0)
 
 [node name="Player" parent="." instance=ExtResource("1")]
-position = Vector3(0, 0.5, 13.0)
+position = Vector3(0, 0, 13.0)
 
 [node name="DungeonUI" type="CanvasLayer" parent="."]
 

@@ -1,0 +1,86 @@
+[gd_scene load_steps=11 format=3]
+
+[sub_resource type="StandardMaterial3D" id="1"]
+albedo_color = Color(0.56, 0.58, 0.62, 1)
+
+[sub_resource type="StandardMaterial3D" id="2"]
+albedo_color = Color(0.78, 0.70, 0.58, 1)
+
+[sub_resource type="StandardMaterial3D" id="3"]
+albedo_color = Color(0.30, 0.32, 0.38, 1)
+
+[sub_resource type="BoxMesh" id="4"]
+size = Vector3(0.54, 0.84, 0.32)
+
+[sub_resource type="SphereMesh" id="5"]
+radius = 0.20
+height = 0.40
+
+[sub_resource type="BoxMesh" id="6"]
+size = Vector3(0.16, 0.64, 0.16)
+
+[sub_resource type="BoxMesh" id="7"]
+size = Vector3(0.20, 0.84, 0.20)
+
+[sub_resource type="StandardMaterial3D" id="8"]
+transparency = 1
+albedo_color = Color(1, 0.22, 0.02, 0.38)
+emission_enabled = true
+emission = Color(1, 0.16, 0.02, 1)
+emission_energy_multiplier = 1.2
+
+[sub_resource type="StandardMaterial3D" id="9"]
+transparency = 1
+albedo_color = Color(0.20, 0.52, 1, 0.30)
+
+[sub_resource type="CapsuleMesh" id="10"]
+radius = 0.42
+mid_height = 1.25
+
+[sub_resource type="CapsuleMesh" id="11"]
+radius = 0.46
+mid_height = 1.3
+
+[node name="PlaceholderHumanoid" type="Node3D"]
+
+[node name="Body" type="MeshInstance3D" parent="."]
+position = Vector3(0, 1.02, 0)
+mesh = SubResource("4")
+material_override = SubResource("1")
+
+[node name="Head" type="MeshInstance3D" parent="."]
+position = Vector3(0, 1.62, 0)
+mesh = SubResource("5")
+material_override = SubResource("2")
+
+[node name="LeftArm" type="MeshInstance3D" parent="."]
+position = Vector3(-0.34, 1.00, 0)
+mesh = SubResource("6")
+material_override = SubResource("3")
+
+[node name="RightArm" type="MeshInstance3D" parent="."]
+position = Vector3(0.34, 1.00, 0)
+mesh = SubResource("6")
+material_override = SubResource("3")
+
+[node name="LeftLeg" type="MeshInstance3D" parent="."]
+position = Vector3(-0.14, 0.42, 0)
+mesh = SubResource("7")
+material_override = SubResource("3")
+
+[node name="RightLeg" type="MeshInstance3D" parent="."]
+position = Vector3(0.14, 0.42, 0)
+mesh = SubResource("7")
+material_override = SubResource("3")
+
+[node name="BurningEffect" type="MeshInstance3D" parent="."]
+visible = false
+position = Vector3(0, 0.92, 0)
+mesh = SubResource("10")
+material_override = SubResource("8")
+
+[node name="WetEffect" type="MeshInstance3D" parent="."]
+visible = false
+position = Vector3(0, 0.92, 0)
+mesh = SubResource("11")
+material_override = SubResource("9")

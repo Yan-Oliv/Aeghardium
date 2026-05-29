@@ -47,6 +47,7 @@ var _firefly_particles: GPUParticles3D = null
 func _ready() -> void:
 	_environment = _resolve_environment()
 	_light = _resolve_light()
+	_configure_directional_light()
 	_player = _resolve_player()
 	var total_cycle: float = _get_total_cycle_duration()
 	time_accumulator = total_cycle * start_cycle_ratio
@@ -64,6 +65,7 @@ func _process(delta: float) -> void:
 
 	if _player == null or not is_instance_valid(_player):
 		_player = _resolve_player()
+	_configure_directional_light()
 
 	time_accumulator = fmod(time_accumulator + delta, _get_total_cycle_duration())
 	_update_weather(delta)
@@ -93,6 +95,27 @@ func _resolve_light() -> DirectionalLight3D:
 		if child is DirectionalLight3D:
 			return child as DirectionalLight3D
 	return null
+
+
+func _configure_directional_light() -> void:
+	if _light == null:
+		return
+	_light.top_level = true
+	_light.global_position = Vector3.ZERO
+	_light.shadow_enabled = true
+	# Keep world shadows driven by sun rotation, not by player/camera-relative cascades.
+	_set_light_property_if_present(_light, "directional_shadow_mode", 0)
+	_set_light_property_if_present(_light, "directional_shadow_max_distance", 90.0)
+	_set_light_property_if_present(_light, "directional_shadow_fade_start", 0.86)
+	_set_light_property_if_present(_light, "shadow_bias", 0.04)
+	_set_light_property_if_present(_light, "shadow_normal_bias", 1.2)
+
+
+func _set_light_property_if_present(light: Light3D, property_name: String, value: Variant) -> void:
+	for property in light.get_property_list():
+		if str(property.get("name", "")) == property_name:
+			light.set(property_name, value)
+			return
 
 
 func _resolve_player() -> Node3D:
@@ -197,6 +220,7 @@ func _apply_environment(delta: float) -> void:
 	env.volumetric_fog_density = 0.02 + fog_factor * 0.05 + rain_factor * 0.015
 
 	if _light != null:
+		_light.global_position = Vector3.ZERO
 		var light_energy: float = lerpf(0.28, 1.18, day_factor)
 		if interior_mode:
 			light_energy = lerpf(0.35, 0.75, day_factor)

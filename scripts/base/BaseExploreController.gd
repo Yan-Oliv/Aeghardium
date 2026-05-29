@@ -44,8 +44,9 @@ func _ready() -> void:
 	_setup_player()
 	_refresh_info()
 	_configure_ui_input()
-	_connect_ui_signals()
+	_connect_base_buttons()
 	_log_button_references()
+	call_deferred("_connect_mobile_camera")
 	prompt_label.text = "Entrar na Dungeon?"
 	if prompt_panel != null:
 		prompt_panel.visible = false
@@ -194,7 +195,7 @@ func _on_cancel_button_pressed() -> void:
 	show_message("Você permanece na base.")
 
 
-func _on_rest_button_pressed() -> void:
+func _on_rest_pressed() -> void:
 	print("[UI] Rest pressed")
 	GameManager.rest_at_base()
 	_sync_local_resources_from_game_state()
@@ -202,7 +203,7 @@ func _on_rest_button_pressed() -> void:
 	show_message("Voce descansou.")
 
 
-func _on_save_button_pressed() -> void:
+func _on_save_pressed() -> void:
 	print("[UI] Save pressed")
 	if GameManager.save_current_game():
 		show_message("Progresso salvo localmente.")
@@ -210,9 +211,21 @@ func _on_save_button_pressed() -> void:
 		show_message("Falha ao salvar.")
 
 
-func _on_title_button_pressed() -> void:
+func _on_return_title_pressed() -> void:
 	print("[UI] Return title pressed")
 	GameManager.show_title()
+
+
+func _on_rest_button_pressed() -> void:
+	_on_rest_pressed()
+
+
+func _on_save_button_pressed() -> void:
+	_on_save_pressed()
+
+
+func _on_title_button_pressed() -> void:
+	_on_return_title_pressed()
 
 
 func _on_interact_button_pressed() -> void:
@@ -225,8 +238,12 @@ func _on_mobile_move_input_changed(value: Vector2) -> void:
 
 
 func _on_mobile_camera_dragged(relative: Vector2) -> void:
+	print("[MobileCamera] drag received=", relative)
 	if not prompt_open:
-		player.add_camera_input(relative, true)
+		if player != null and player.has_method("add_camera_input"):
+			player.add_camera_input(relative, true)
+		else:
+			print("[MobileCamera] player missing or has no add_camera_input")
 
 
 func _on_menu_button_pressed() -> void:
@@ -241,26 +258,52 @@ func _input(event: InputEvent) -> void:
 		player.add_camera_input(event.relative, false)
 
 
-func _connect_ui_signals() -> void:
-	if rest_button != null and not rest_button.pressed.is_connected(_on_rest_button_pressed):
-		rest_button.pressed.connect(_on_rest_button_pressed)
-	if save_button != null and not save_button.pressed.is_connected(_on_save_button_pressed):
-		save_button.pressed.connect(_on_save_button_pressed)
-	if title_button != null and not title_button.pressed.is_connected(_on_title_button_pressed):
-		title_button.pressed.connect(_on_title_button_pressed)
+func _connect_base_buttons() -> void:
+	print("[BaseButtons] rest_button=", rest_button)
+	print("[BaseButtons] save_button=", save_button)
+	print("[BaseButtons] title_button=", title_button)
+	if rest_button != null:
+		rest_button.add_to_group("ui_action_button")
+		rest_button.mouse_filter = Control.MOUSE_FILTER_STOP
+		rest_button.z_index = 50
+		if not rest_button.pressed.is_connected(_on_rest_pressed):
+			rest_button.pressed.connect(_on_rest_pressed)
+	if save_button != null:
+		save_button.add_to_group("ui_action_button")
+		save_button.mouse_filter = Control.MOUSE_FILTER_STOP
+		save_button.z_index = 50
+		if not save_button.pressed.is_connected(_on_save_pressed):
+			save_button.pressed.connect(_on_save_pressed)
+	if title_button != null:
+		title_button.add_to_group("ui_action_button")
+		title_button.mouse_filter = Control.MOUSE_FILTER_STOP
+		title_button.z_index = 50
+		if not title_button.pressed.is_connected(_on_return_title_pressed):
+			title_button.pressed.connect(_on_return_title_pressed)
 	if confirm_button != null and not confirm_button.pressed.is_connected(_on_enter_button_pressed):
 		confirm_button.pressed.connect(_on_enter_button_pressed)
 	if cancel_button != null and not cancel_button.pressed.is_connected(_on_cancel_button_pressed):
 		cancel_button.pressed.connect(_on_cancel_button_pressed)
-	if mobile_controls != null:
-		if not mobile_controls.move_input_changed.is_connected(_on_mobile_move_input_changed):
-			mobile_controls.move_input_changed.connect(_on_mobile_move_input_changed)
-		if not mobile_controls.camera_dragged.is_connected(_on_mobile_camera_dragged):
-			mobile_controls.camera_dragged.connect(_on_mobile_camera_dragged)
-		if not mobile_controls.interact_pressed.is_connected(_on_interact_button_pressed):
-			mobile_controls.interact_pressed.connect(_on_interact_button_pressed)
-		if not mobile_controls.menu_pressed.is_connected(_on_menu_button_pressed):
-			mobile_controls.menu_pressed.connect(_on_menu_button_pressed)
+
+
+func _connect_mobile_camera() -> void:
+	var controls: Node = get_tree().get_first_node_in_group("mobile_controls")
+	print("[MobileCamera] mobile_controls=", controls)
+	if controls == null:
+		return
+	if controls.has_signal("move_input_changed") and not controls.move_input_changed.is_connected(_on_mobile_move_input_changed):
+		controls.move_input_changed.connect(_on_mobile_move_input_changed)
+	if controls.has_signal("camera_dragged"):
+		var callable := Callable(self, "_on_mobile_camera_dragged")
+		if not controls.is_connected("camera_dragged", callable):
+			controls.connect("camera_dragged", callable)
+			print("[MobileCamera] camera_dragged connected")
+	else:
+		print("[MobileCamera] mobile_controls has no camera_dragged signal")
+	if controls.has_signal("interact_pressed") and not controls.interact_pressed.is_connected(_on_interact_button_pressed):
+		controls.interact_pressed.connect(_on_interact_button_pressed)
+	if controls.has_signal("menu_pressed") and not controls.menu_pressed.is_connected(_on_menu_button_pressed):
+		controls.menu_pressed.connect(_on_menu_button_pressed)
 
 
 func _configure_ui_input() -> void:
@@ -278,9 +321,11 @@ func _configure_ui_input() -> void:
 	var top_right: Control = get_node_or_null("BaseUI/TopRight")
 	if top_right != null:
 		top_right.mouse_filter = Control.MOUSE_FILTER_PASS
+		top_right.z_index = 50
 	var buttons_box: Control = get_node_or_null("BaseUI/TopRight/Buttons")
 	if buttons_box != null:
 		buttons_box.mouse_filter = Control.MOUSE_FILTER_PASS
+		buttons_box.z_index = 50
 	if rest_button != null:
 		rest_button.mouse_filter = Control.MOUSE_FILTER_STOP
 		rest_button.disabled = false
@@ -298,6 +343,7 @@ func _configure_ui_input() -> void:
 			title_button.add_to_group("ui_action_button")
 	if prompt_panel != null:
 		prompt_panel.mouse_filter = Control.MOUSE_FILTER_STOP
+		prompt_panel.z_index = 50
 	var prompt_vbox: Control = get_node_or_null("BaseUI/PromptPanel/PromptVBox")
 	if prompt_vbox != null:
 		prompt_vbox.mouse_filter = Control.MOUSE_FILTER_PASS
