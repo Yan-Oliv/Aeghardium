@@ -1,16 +1,17 @@
 extends RefCounted
 class_name UITheme
 
-const BG_DARK := Color("080B10")
-const PANEL_DARK := Color("12161D")
-const PANEL_STONE := Color("1B1B1B")
-const GOLD := Color("C9A646")
-const PARCHMENT := Color("D8C89A")
+const BG_DARK := Color("0A1128")
+const PANEL_DARK := Color("10182F")
+const PANEL_STONE := Color("151A26")
+const GOLD := Color("FFD700")
+const PARCHMENT := Color("F5F5F5")
 const BLOOD := Color("8B1E24")
 const MIST := Color("3D5A4A")
 const MANA := Color("3A6EA5")
-const TEXT_MAIN := Color("F2EBD8")
-const TEXT_SECONDARY := Color("B8AA8A")
+const TEXT_MAIN := Color("F5F5F5")
+const TEXT_SECONDARY := Color("D8C89A")
+const PIXEL_LINE := Color("3B2A12")
 
 static func apply(root: Control) -> void:
 	_style_recursive(root)
@@ -26,12 +27,12 @@ static func panel_style(kind: String = "stone") -> StyleBoxFlat:
 	style.border_width_top = 2
 	style.border_width_right = 2
 	style.border_width_bottom = 2
-	style.corner_radius_top_left = 12
-	style.corner_radius_top_right = 12
-	style.corner_radius_bottom_right = 12
-	style.corner_radius_bottom_left = 12
-	style.shadow_color = Color(0, 0, 0, 0.45)
-	style.shadow_size = 8
+	style.corner_radius_top_left = 4
+	style.corner_radius_top_right = 4
+	style.corner_radius_bottom_right = 4
+	style.corner_radius_bottom_left = 4
+	style.shadow_color = Color(0, 0, 0, 0.55)
+	style.shadow_size = 4
 	style.content_margin_left = 18
 	style.content_margin_top = 16
 	style.content_margin_right = 18
@@ -47,10 +48,10 @@ static func button_style(fill: Color) -> StyleBoxFlat:
 	style.border_width_top = 1
 	style.border_width_right = 1
 	style.border_width_bottom = 1
-	style.corner_radius_top_left = 10
-	style.corner_radius_top_right = 10
-	style.corner_radius_bottom_right = 10
-	style.corner_radius_bottom_left = 10
+	style.corner_radius_top_left = 3
+	style.corner_radius_top_right = 3
+	style.corner_radius_bottom_right = 3
+	style.corner_radius_bottom_left = 3
 	style.content_margin_left = 16
 	style.content_margin_right = 16
 	style.content_margin_top = 12
@@ -76,10 +77,10 @@ static func progress_bg() -> StyleBoxFlat:
 	style.border_width_top = 1
 	style.border_width_right = 1
 	style.border_width_bottom = 1
-	style.corner_radius_top_left = 8
-	style.corner_radius_top_right = 8
-	style.corner_radius_bottom_right = 8
-	style.corner_radius_bottom_left = 8
+	style.corner_radius_top_left = 2
+	style.corner_radius_top_right = 2
+	style.corner_radius_bottom_right = 2
+	style.corner_radius_bottom_left = 2
 	return style
 
 
@@ -88,7 +89,7 @@ static func _style_recursive(node: Node) -> void:
 		(node as PanelContainer).add_theme_stylebox_override("panel", panel_style())
 	elif node is Button:
 		var button := node as Button
-		button.custom_minimum_size.y = 54
+		button.custom_minimum_size.y = maxf(button.custom_minimum_size.y, 52.0)
 		button.add_theme_stylebox_override("normal", button_style(PANEL_DARK))
 		button.add_theme_stylebox_override("hover", button_style(Color(0.13, 0.16, 0.20, 1.0)))
 		button.add_theme_stylebox_override("pressed", button_style(Color(0.18, 0.14, 0.10, 1.0)))
@@ -97,18 +98,24 @@ static func _style_recursive(node: Node) -> void:
 		button.add_theme_color_override("font_hover_color", PARCHMENT)
 		button.add_theme_color_override("font_pressed_color", TEXT_MAIN)
 		button.add_theme_color_override("font_disabled_color", TEXT_SECONDARY.darkened(0.25))
+		button.add_theme_font_size_override("font_size", 17)
 	elif node is Label:
 		var label := node as Label
 		label.add_theme_color_override("font_color", TEXT_MAIN)
+		if label.name.to_lower().contains("title"):
+			label.add_theme_color_override("font_color", PARCHMENT)
+			label.add_theme_font_size_override("font_size", max(22, label.get_theme_font_size("font_size")))
 	elif node is RichTextLabel:
 		var rich := node as RichTextLabel
 		rich.add_theme_color_override("default_color", TEXT_MAIN)
+		rich.add_theme_color_override("font_shadow_color", Color(0, 0, 0, 0.35))
 	elif node is LineEdit:
 		var line := node as LineEdit
 		line.add_theme_color_override("font_color", TEXT_MAIN)
 		line.add_theme_color_override("font_placeholder_color", TEXT_SECONDARY)
 		line.add_theme_stylebox_override("normal", panel_style("parchment"))
 		line.add_theme_stylebox_override("focus", panel_style("parchment"))
+		line.add_theme_font_size_override("font_size", 17)
 	elif node is ItemList:
 		var list := node as ItemList
 		list.add_theme_stylebox_override("panel", panel_style())

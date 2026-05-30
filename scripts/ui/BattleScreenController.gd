@@ -40,9 +40,12 @@ var class_icons: Dictionary = {
 @onready var log_label: RichTextLabel = $MarginContainer/VBoxContainer/LogPanel/LogLabel
 @onready var sky_rect: ColorRect = $Background/Sky
 @onready var mist_rect: ColorRect = $Background/Mist
+@onready var backdrop_props: Control = $Background/BackdropProps
 @onready var ground_rect: ColorRect = $Background/Ground
 @onready var enemy_banner: Label = $MarginContainer/VBoxContainer/CombatRow/EnemyPanel/EnemyRow/Portrait/EnemyGlyph
 @onready var player_banner: Label = $MarginContainer/VBoxContainer/CombatRow/PlayerPanel/PlayerRow/Portrait/PlayerGlyph
+@onready var enemy_texture: TextureRect = $MarginContainer/VBoxContainer/CombatRow/EnemyPanel/EnemyRow/Portrait/EnemyTexture
+@onready var player_texture: TextureRect = $MarginContainer/VBoxContainer/CombatRow/PlayerPanel/PlayerRow/Portrait/PlayerTexture
 @onready var player_panel: PanelContainer = $MarginContainer/VBoxContainer/CombatRow/PlayerPanel
 @onready var enemy_panel: PanelContainer = $MarginContainer/VBoxContainer/CombatRow/EnemyPanel
 @onready var player_flash: ColorRect = $MarginContainer/VBoxContainer/CombatRow/PlayerPanel/PlayerFlash
@@ -58,6 +61,7 @@ func _ready() -> void:
 		GameManager.show_base()
 		return
 	_apply_biome()
+	_prepare_portraits()
 	var skills: Array = player_state.get("skill_ids", [])
 	skill_one_button.text = str(SkillData.get_skill(skills[0] if skills.size() > 0 else "").get("name", "Skill 1"))
 	skill_two_button.text = str(SkillData.get_skill(skills[1] if skills.size() > 1 else "").get("name", "Skill 2"))
@@ -67,15 +71,38 @@ func _ready() -> void:
 
 
 func _tune_action_buttons() -> void:
+	var attack_button: Button = $MarginContainer/VBoxContainer/Actions/AttackButton
+	var item_button: Button = $MarginContainer/VBoxContainer/Actions/ItemButton
+	var defend_button: Button = $MarginContainer/VBoxContainer/Actions/DefendButton
 	for button in [
-		$MarginContainer/VBoxContainer/Actions/AttackButton,
+		attack_button,
 		$MarginContainer/VBoxContainer/Actions/SkillOneButton,
 		$MarginContainer/VBoxContainer/Actions/SkillTwoButton,
-		$MarginContainer/VBoxContainer/Actions/ItemButton,
-		$MarginContainer/VBoxContainer/Actions/DefendButton,
+		item_button,
+		defend_button,
 		$MarginContainer/VBoxContainer/Actions/FleeButton
 	]:
 		button.custom_minimum_size.y = 44
+	attack_button.icon = PixelAssetRegistry.get_item_icon_texture("short_sword")
+	item_button.icon = PixelAssetRegistry.get_item_icon_texture("small_potion")
+	defend_button.icon = PixelAssetRegistry.get_item_icon_texture("light_shield")
+	player_texture.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	player_texture.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	player_texture.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	enemy_texture.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	enemy_texture.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	enemy_texture.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	player_banner.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+	player_banner.vertical_alignment = VERTICAL_ALIGNMENT_BOTTOM
+	enemy_banner.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
+	enemy_banner.vertical_alignment = VERTICAL_ALIGNMENT_BOTTOM
+	player_banner.modulate = Color(1, 1, 1, 0.82)
+	enemy_banner.modulate = Color(1, 1, 1, 0.82)
+
+
+func _prepare_portraits() -> void:
+	player_texture.texture = null
+	enemy_texture.texture = null
 
 
 func _process(delta: float) -> void:
@@ -213,7 +240,13 @@ func _update_labels() -> void:
 	enemy_hp_bar.max_value = float(enemy_state.get("max_health", 0.0))
 	enemy_hp_bar.value = float(enemy_state.get("current_health", 0.0))
 	enemy_hp_label.text = "HP %.0f / %.0f" % [enemy_state.get("current_health", 0.0), enemy_state.get("max_health", 0.0)]
-	enemy_meta_label.text = "FOR %.0f  DEF %.0f  INT %.0f  AGI %.0f" % [enemy_state.get("strength", 0.0), enemy_state.get("defense", 0.0), enemy_state.get("intelligence", 0.0), enemy_state.get("agility", 0.0)]
+	enemy_meta_label.text = "FOR %.0f  DEF %.0f  INT %.0f  AGI %.0f  FRQ %s" % [
+		enemy_state.get("strength", 0.0),
+		enemy_state.get("defense", 0.0),
+		enemy_state.get("intelligence", 0.0),
+		enemy_state.get("agility", 0.0),
+		str(enemy_state.get("weakness", "-")).to_upper()
+	]
 	var player_class_id: String = str(player_state.get("class_id", "warrior"))
 	var player_class_info: Dictionary = ClassData.get_class_data(player_class_id)
 	player_name_label.text = "%s - %s" % [player_state.get("player_name", "Herói"), player_class_info.get("display_name", "Classe")]
@@ -232,6 +265,16 @@ func _update_labels() -> void:
 	]
 	player_banner.text = _class_icon(player_class_id)
 	enemy_banner.text = _enemy_icon(str(enemy_state.get("enemy_id", "")))
+	var player_real_portrait := PixelAssetRegistry.get_player_portrait_texture(player_class_id)
+	var enemy_real_portrait := PixelAssetRegistry.get_enemy_portrait_texture(str(enemy_state.get("enemy_id", "")))
+	player_texture.texture = player_real_portrait
+	enemy_texture.texture = enemy_real_portrait
+	if player_texture.texture == null:
+		player_texture.texture = PixelArtFactory.make_battle_actor_texture(player_state, "", player_class_id, false)
+	if enemy_texture.texture == null:
+		enemy_texture.texture = PixelArtFactory.make_battle_actor_texture(enemy_state, str(enemy_state.get("enemy_id", "")), "", true)
+	player_banner.visible = player_real_portrait == null
+	enemy_banner.visible = enemy_real_portrait == null
 
 
 func _append_log(message: String) -> void:
@@ -434,7 +477,7 @@ func _on_flee_button_pressed() -> void:
 
 
 func _apply_biome() -> void:
-	var biome: Dictionary = GameManager.get_biome_for_floor(int(enemy_state.get("floor", 1)))
+	var biome: Dictionary = GameManager.get_visual_biome_for_floor(int(enemy_state.get("floor", 1)))
 	biome_label.text = str(biome.get("name", "Floresta do Início"))
 	sky_rect.color = biome.get("sky", UITheme.BG_DARK)
 	mist_rect.color = biome.get("mist", UITheme.MIST)
@@ -442,6 +485,63 @@ func _apply_biome() -> void:
 	enemy_hp_bar.add_theme_stylebox_override("fill", UITheme.progress_fill(UITheme.BLOOD))
 	player_hp_bar.add_theme_stylebox_override("fill", UITheme.progress_fill(UITheme.BLOOD))
 	player_mp_bar.add_theme_stylebox_override("fill", UITheme.progress_fill(UITheme.MANA))
+	_build_battle_backdrop(biome)
+
+
+func _build_battle_backdrop(biome: Dictionary) -> void:
+	var viewport_size := get_viewport_rect().size
+	for child in backdrop_props.get_children():
+		child.queue_free()
+	var background_texture := PixelAssetRegistry.get_battle_background_texture(
+		PixelAssetRegistry.get_biome_key_for_floor(int(enemy_state.get("floor", 1)))
+	)
+	if background_texture != null:
+		var background_rect := TextureRect.new()
+		background_rect.texture = background_texture
+		background_rect.position = Vector2.ZERO
+		background_rect.size = viewport_size
+		background_rect.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+		background_rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		background_rect.stretch_mode = TextureRect.STRETCH_SCALE
+		background_rect.modulate = Color(1, 1, 1, 0.92)
+		backdrop_props.add_child(background_rect)
+		return
+	_add_backdrop_texture(
+		PixelArtFactory.make_tree_texture(biome.get("grass_accent", Color8(74, 122, 72)), Color8(82, 52, 28)),
+		Vector2(viewport_size.x * 0.08, viewport_size.y * 0.36),
+		Vector2(2.5, 2.5),
+		Color(1, 1, 1, 0.74)
+	)
+	_add_backdrop_texture(
+		PixelArtFactory.make_tree_texture(biome.get("grass_base", Color8(54, 92, 56)).darkened(0.12), Color8(74, 42, 24)),
+		Vector2(viewport_size.x * 0.86, viewport_size.y * 0.37),
+		Vector2(2.3, 2.3),
+		Color(1, 1, 1, 0.70)
+	)
+	_add_backdrop_texture(
+		PixelArtFactory.make_crystal_texture(biome.get("glow", Color8(154, 214, 138)), biome.get("accent", Color8(114, 86, 154)), biome.get("stone_base", Color8(92, 96, 94))),
+		Vector2(viewport_size.x * 0.48, viewport_size.y * 0.30),
+		Vector2(1.9, 1.9),
+		Color(1, 1, 1, 0.90)
+	)
+	_add_backdrop_texture(
+		PixelArtFactory.make_rubble_texture(biome.get("stone_base", Color8(92, 96, 94)), biome.get("accent", Color8(114, 86, 154))),
+		Vector2(viewport_size.x * 0.47, viewport_size.y * 0.66),
+		Vector2(2.0, 2.0),
+		Color(1, 1, 1, 0.86)
+	)
+
+
+func _add_backdrop_texture(texture: Texture2D, position_value: Vector2, scale_value: Vector2, tint: Color = Color.WHITE) -> void:
+	var rect := TextureRect.new()
+	rect.texture = texture
+	rect.position = position_value
+	rect.scale = scale_value
+	rect.modulate = tint
+	rect.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	backdrop_props.add_child(rect)
 
 
 func _class_icon(class_id: String) -> String:

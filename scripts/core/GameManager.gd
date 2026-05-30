@@ -4,9 +4,9 @@ const TITLE_SCENE := "res://scenes/ui/TitleScreen.tscn"
 const INTRO_SCENE := "res://scenes/ui/IntroScreen.tscn"
 const CLASS_SCENE := "res://scenes/ui/ClassSelectionScreen.tscn"
 const CHARACTER_CREATION_SCENE := "res://scenes/ui/CharacterCreationScreen.tscn"
-const BASE_SCENE := "res://scenes/base/BaseExplore.tscn"
+const BASE_SCENE := "res://scenes/2d/maps/BaseVillage2D.tscn"
 const LEGACY_BASE_SCENE := "res://scenes/ui/BaseScreen.tscn"
-const DUNGEON_FLOOR_01_SCENE := "res://scenes/dungeon/DungeonFloor01.tscn"
+const DUNGEON_FLOOR_01_SCENE := "res://scenes/2d/maps/DungeonFloor2D.tscn"
 const BATTLE_SCENE := "res://scenes/ui/BattleScreen.tscn"
 const PAUSE_SCENE := "res://scenes/ui/PauseMenu.tscn"
 
@@ -19,6 +19,9 @@ var player_name: String = ""
 var player_state: Dictionary = {}
 var current_battle_data: Dictionary = {}
 var pending_message: String = ""
+var current_battle_source: String = ""
+var current_battle_enemy_id: String = ""
+var defeated_dungeon_enemies: Array[String] = []
 
 const DEFAULT_APPEARANCE := {
 	"body_type": "masculine",
@@ -26,6 +29,7 @@ const DEFAULT_APPEARANCE := {
 	"eye_color": "amber",
 	"hair_style": "short",
 	"hair_color": "black",
+	"outfit_variant": "class_default",
 	"aura_enabled": true
 }
 
@@ -71,6 +75,9 @@ func start_new_game() -> void:
 	player_name = ""
 	player_state = {}
 	current_battle_data = {}
+	current_battle_source = ""
+	current_battle_enemy_id = ""
+	defeated_dungeon_enemies.clear()
 	show_intro()
 
 
@@ -119,10 +126,12 @@ func rest_at_base() -> void:
 	show_message("O grupo descansou e recuperou recursos.")
 
 
-func start_dungeon_battle() -> void:
+func start_dungeon_battle(enemy_id: String = "", battle_source: String = "base") -> void:
 	if player_state.is_empty():
 		return
-	current_battle_data = _build_battle_for_floor(int(player_state.get("floor", 1)))
+	current_battle_data = _build_battle_for_floor_v2(int(player_state.get("floor", 1)))
+	current_battle_source = battle_source
+	current_battle_enemy_id = enemy_id
 	show_battle()
 
 
@@ -140,6 +149,8 @@ func resolve_battle(victory: bool, rewards: Dictionary = {}) -> void:
 		pending_message = "Você voltou para a base sem penalidade."
 		save_current_game()
 		current_battle_data = {}
+		current_battle_source = ""
+		current_battle_enemy_id = ""
 		show_base()
 		return
 	if victory:
@@ -148,6 +159,9 @@ func resolve_battle(victory: bool, rewards: Dictionary = {}) -> void:
 		player_state["floor"] = min(25, int(player_state.get("floor", 1)) + 1)
 		player_state["current_mana"] = minf(float(player_state.get("max_mana", 0.0)), float(player_state.get("current_mana", 0.0)) + maxf(4.0, float(player_state.get("max_mana", 0.0)) * 0.2))
 		_apply_level_ups()
+		if current_battle_source == "dungeon_floor_2d" and not current_battle_enemy_id.is_empty():
+			if not defeated_dungeon_enemies.has(current_battle_enemy_id):
+				defeated_dungeon_enemies.append(current_battle_enemy_id)
 		pending_message = "Vitória! Ouro +%s | XP +%s" % [rewards.get("gold", 0), rewards.get("xp", 0)]
 		save_current_game()
 	else:
@@ -158,7 +172,13 @@ func resolve_battle(victory: bool, rewards: Dictionary = {}) -> void:
 		pending_message = "Derrota. Você perdeu %s XP e retornou à base." % loss
 		save_current_game()
 	current_battle_data = {}
-	show_base()
+	var return_to_dungeon: bool = victory and current_battle_source == "dungeon_floor_2d"
+	current_battle_source = ""
+	current_battle_enemy_id = ""
+	if return_to_dungeon:
+		show_dungeon_floor_01()
+	else:
+		show_base()
 
 
 func get_player_state() -> Dictionary:
@@ -179,12 +199,17 @@ func normalize_appearance(appearance: Dictionary) -> Dictionary:
 	normalized["eye_color"] = str(normalized.get("eye_color", "amber"))
 	normalized["hair_style"] = str(normalized.get("hair_style", "short"))
 	normalized["hair_color"] = str(normalized.get("hair_color", "black"))
+	normalized["outfit_variant"] = str(normalized.get("outfit_variant", "class_default"))
 	normalized["aura_enabled"] = bool(normalized.get("aura_enabled", true))
 	return normalized
 
 
 func get_current_battle_data() -> Dictionary:
 	return current_battle_data
+
+
+func is_dungeon_enemy_defeated(enemy_id: String) -> bool:
+	return defeated_dungeon_enemies.has(enemy_id)
 
 
 func get_biome_for_floor(floor_value: int) -> Dictionary:
@@ -317,6 +342,7 @@ func _build_new_player(class_id: String, chosen_name: String, appearance: Dictio
 		"luck": float(stats.get("sorte", 10)),
 		"skill_ids": class_info.get("skills", []),
 		"inventory": {"small_potion": 3},
+		"equipment_visuals": _default_equipment_visuals_for_class(class_id),
 		"appearance": normalize_appearance(appearance)
 	}
 
@@ -345,7 +371,25 @@ func _normalize_player_state() -> void:
 	player_state["luck"] = float(player_state.get("luck", stats.get("sorte", 10)))
 	player_state["skill_ids"] = player_state.get("skill_ids", class_info.get("skills", []))
 	player_state["inventory"] = player_state.get("inventory", {"small_potion": 3})
+	player_state["equipment_visuals"] = player_state.get("equipment_visuals", _default_equipment_visuals_for_class(normalized_class_id))
 	player_state["appearance"] = normalize_appearance(player_state.get("appearance", {}))
+
+
+func _default_equipment_visuals_for_class(class_id: String) -> Dictionary:
+	match class_id:
+		"warrior":
+			return {"main_hand": "long_sword", "chest": "iron_armor"}
+		"paladin":
+			return {"main_hand": "long_sword", "offhand": "light_shield", "chest": "iron_armor"}
+		"assassin":
+			return {"main_hand": "twin_daggers", "cape": "shadow_cape"}
+		"archer":
+			return {"main_hand": "wooden_bow", "cape": "shadow_cape"}
+		"berserker":
+			return {"main_hand": "hand_axe"}
+		"mage", "necromancer", "druid", "cleric":
+			return {"main_hand": "simple_staff", "chest": "basic_robe"}
+	return {"main_hand": "short_sword"}
 
 
 func _build_battle_for_floor(floor_value: int) -> Dictionary:
@@ -357,6 +401,144 @@ func _build_battle_for_floor(floor_value: int) -> Dictionary:
 			enemy_id = "young_wolf"
 		_:
 			enemy_id = "blue_slime" if floor_value % 2 == 0 else "young_wolf"
+	var enemy_data: Dictionary = EnemyData.get_enemy(enemy_id).duplicate(true)
+	enemy_data["enemy_id"] = enemy_id
+	enemy_data["current_health"] = float(enemy_data.get("max_health", 1.0))
+	enemy_data["current_mana"] = float(enemy_data.get("max_mana", 0.0))
+	enemy_data["floor"] = floor_value
+	return enemy_data
+
+
+func get_visual_biome_for_floor(floor_value: int) -> Dictionary:
+	var biome := get_biome_for_floor(floor_value).duplicate(true)
+	if floor_value <= 5:
+		biome.merge({
+			"name": "Floresta do Inicio",
+			"accent": Color8(90, 180, 122),
+			"glow": Color8(114, 214, 166),
+			"stone": Color8(94, 104, 98),
+			"grass_base": Color8(54, 92, 56),
+			"grass_accent": Color8(74, 122, 72),
+			"grass_detail": Color8(40, 76, 48),
+			"stone_base": Color8(92, 96, 94),
+			"stone_accent": Color8(120, 126, 122),
+			"path_base": Color8(94, 76, 50),
+			"path_accent": Color8(122, 96, 66),
+			"water_base": Color8(42, 118, 162),
+			"water_accent": Color8(82, 176, 212),
+			"props": ["trees", "bushes", "ruins", "crystals"]
+		}, true)
+	elif floor_value <= 10:
+		biome.merge({
+			"name": "Pantano Sombrio",
+			"accent": Color8(110, 166, 96),
+			"glow": Color8(154, 214, 138),
+			"stone": Color8(88, 92, 82),
+			"grass_base": Color8(58, 72, 48),
+			"grass_accent": Color8(84, 108, 62),
+			"grass_detail": Color8(46, 58, 36),
+			"stone_base": Color8(76, 80, 74),
+			"stone_accent": Color8(98, 102, 92),
+			"path_base": Color8(82, 68, 46),
+			"path_accent": Color8(96, 84, 56),
+			"mud_base": Color8(66, 60, 42),
+			"mud_accent": Color8(94, 80, 56),
+			"water_base": Color8(44, 82, 80),
+			"water_accent": Color8(82, 132, 114),
+			"props": ["reeds", "swamp", "bones", "fungi"]
+		}, true)
+	elif floor_value <= 15:
+		biome.merge({
+			"name": "Minas Abandonadas",
+			"accent": Color8(214, 112, 72),
+			"glow": Color8(242, 172, 92),
+			"stone": Color8(104, 88, 74),
+			"grass_base": Color8(62, 58, 48),
+			"grass_accent": Color8(88, 74, 56),
+			"grass_detail": Color8(48, 44, 36),
+			"stone_base": Color8(92, 80, 70),
+			"stone_accent": Color8(122, 104, 88),
+			"path_base": Color8(98, 76, 54),
+			"path_accent": Color8(130, 98, 72),
+			"water_base": Color8(72, 98, 128),
+			"water_accent": Color8(106, 132, 166),
+			"props": ["crystals", "chains", "ore", "lava"]
+		}, true)
+	elif floor_value <= 20:
+		biome.merge({
+			"name": "Templo dos Ventos",
+			"accent": Color8(164, 204, 220),
+			"glow": Color8(212, 240, 246),
+			"stone": Color8(102, 108, 112),
+			"grass_base": Color8(72, 80, 84),
+			"grass_accent": Color8(98, 112, 116),
+			"grass_detail": Color8(58, 64, 70),
+			"stone_base": Color8(104, 108, 112),
+			"stone_accent": Color8(134, 142, 146),
+			"path_base": Color8(96, 98, 104),
+			"path_accent": Color8(138, 144, 148),
+			"water_base": Color8(82, 124, 166),
+			"water_accent": Color8(118, 166, 212),
+			"props": ["pillars", "feathers", "wind_crystals", "altars"]
+		}, true)
+	else:
+		biome.merge({
+			"name": "Catacumbas de Ossos",
+			"accent": Color8(176, 110, 214),
+			"glow": Color8(218, 186, 255),
+			"stone": Color8(92, 84, 88),
+			"grass_base": Color8(66, 60, 64),
+			"grass_accent": Color8(88, 80, 86),
+			"grass_detail": Color8(48, 44, 50),
+			"stone_base": Color8(88, 80, 84),
+			"stone_accent": Color8(114, 106, 114),
+			"path_base": Color8(76, 66, 74),
+			"path_accent": Color8(106, 90, 102),
+			"water_base": Color8(76, 82, 126),
+			"water_accent": Color8(118, 124, 174),
+			"props": ["bones", "altars", "sarcophagi", "cursed_crystals"]
+		}, true)
+	return biome
+
+
+func _build_battle_for_floor_v2(floor_value: int) -> Dictionary:
+	var enemy_id := "slime_green"
+	match floor_value:
+		1:
+			enemy_id = "slime_green"
+		2:
+			enemy_id = "young_wolf"
+		3:
+			enemy_id = "carnivorous_plant"
+		4:
+			enemy_id = "goblin_thief"
+		5:
+			enemy_id = "skeletal_guard"
+		6:
+			enemy_id = "poison_toad"
+		7:
+			enemy_id = "wailing_spirit"
+		8:
+			enemy_id = "giant_bee"
+		9:
+			enemy_id = "vampire_bat"
+		10:
+			enemy_id = "skeletal_guard"
+		15:
+			enemy_id = "iron_golem"
+		20:
+			enemy_id = "wind_king"
+		25:
+			enemy_id = "fallen_necromancer"
+		_:
+			if floor_value <= 10:
+				enemy_id = "blue_slime" if floor_value % 2 == 0 else "young_wolf"
+			elif floor_value <= 15:
+				enemy_id = "iron_golem" if floor_value % 3 == 0 else "wailing_spirit"
+			elif floor_value <= 20:
+				enemy_id = "giant_bee" if floor_value % 2 == 0 else "iron_golem"
+			else:
+				enemy_id = "fallen_necromancer" if floor_value % 4 == 0 else "skeletal_guard"
 	var enemy_data: Dictionary = EnemyData.get_enemy(enemy_id).duplicate(true)
 	enemy_data["enemy_id"] = enemy_id
 	enemy_data["current_health"] = float(enemy_data.get("max_health", 1.0))

@@ -32,6 +32,12 @@ anchor_bottom = 1.0
 offset_top = -260.0
 color = Color(0.24, 0.31, 0.26, 0.16)
 
+[node name="BackdropProps" type="Control" parent="Background"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+
 [node name="TreeBand" type="ColorRect" parent="Background"]
 layout_mode = 1
 anchors_preset = 12
@@ -111,6 +117,14 @@ theme_override_constants/separation = 12
 [node name="Portrait" type="PanelContainer" parent="MarginContainer/VBoxContainer/CombatRow/PlayerPanel/PlayerRow"]
 layout_mode = 2
 custom_minimum_size = Vector2(100, 100)
+
+[node name="PlayerTexture" type="TextureRect" parent="MarginContainer/VBoxContainer/CombatRow/PlayerPanel/PlayerRow/Portrait"]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+expand_mode = 1
+stretch_mode = 5
+texture_filter = 1
 
 [node name="PlayerGlyph" type="Label" parent="MarginContainer/VBoxContainer/CombatRow/PlayerPanel/PlayerRow/Portrait"]
 layout_mode = 2
@@ -201,6 +215,14 @@ horizontal_alignment = 2
 [node name="Portrait" type="PanelContainer" parent="MarginContainer/VBoxContainer/CombatRow/EnemyPanel/EnemyRow"]
 layout_mode = 2
 custom_minimum_size = Vector2(100, 100)
+
+[node name="EnemyTexture" type="TextureRect" parent="MarginContainer/VBoxContainer/CombatRow/EnemyPanel/EnemyRow/Portrait"]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+expand_mode = 1
+stretch_mode = 5
+texture_filter = 1
 
 [node name="EnemyGlyph" type="Label" parent="MarginContainer/VBoxContainer/CombatRow/EnemyPanel/EnemyRow/Portrait"]
 layout_mode = 2

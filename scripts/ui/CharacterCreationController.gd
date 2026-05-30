@@ -5,7 +5,6 @@ extends Control
 @onready var name_input: LineEdit = $MarginContainer/PanelContainer/OuterVBox/ScrollContainer/VBoxContainer/NamePanel/NameColumn/NameInput
 @onready var summary_label: RichTextLabel = $MarginContainer/PanelContainer/OuterVBox/ScrollContainer/VBoxContainer/TopRow/InfoColumn/SummaryPanel/SummaryLabel
 @onready var preview_icon: Label = $MarginContainer/PanelContainer/OuterVBox/ScrollContainer/VBoxContainer/TopRow/PreviewPanel/PreviewVBox/IconLabel
-@onready var preview_3d: CharacterPreview3D = $MarginContainer/PanelContainer/OuterVBox/ScrollContainer/VBoxContainer/TopRow/PreviewPanel/PreviewVBox/PreviewViewportContainer/PreviewViewport/CharacterPreview3D
 @onready var helper_label: Label = $MarginContainer/PanelContainer/OuterVBox/ScrollContainer/VBoxContainer/NamePanel/NameColumn/HelperLabel
 @onready var body_type_value: Label = $MarginContainer/PanelContainer/OuterVBox/ScrollContainer/VBoxContainer/AppearancePanel/AppearanceVBox/BodyTypeRow/ValueLabel
 @onready var skin_tone_value: Label = $MarginContainer/PanelContainer/OuterVBox/ScrollContainer/VBoxContainer/AppearancePanel/AppearanceVBox/SkinToneRow/ValueLabel
@@ -13,6 +12,8 @@ extends Control
 @onready var hair_style_value: Label = $MarginContainer/PanelContainer/OuterVBox/ScrollContainer/VBoxContainer/AppearancePanel/AppearanceVBox/HairStyleRow/ValueLabel
 @onready var hair_color_value: Label = $MarginContainer/PanelContainer/OuterVBox/ScrollContainer/VBoxContainer/AppearancePanel/AppearanceVBox/HairColorRow/ValueLabel
 @onready var aura_value: Label = $MarginContainer/PanelContainer/OuterVBox/ScrollContainer/VBoxContainer/AppearancePanel/AppearanceVBox/AuraRow/ValueLabel
+@onready var outfit_variant_value: Label = $MarginContainer/PanelContainer/OuterVBox/ScrollContainer/VBoxContainer/AppearancePanel/AppearanceVBox/OutfitVariantRow/ValueLabel
+@onready var preview_player: Player2DController = get_node_or_null("MarginContainer/PanelContainer/OuterVBox/ScrollContainer/VBoxContainer/TopRow/PreviewPanel/PreviewVBox/PreviewViewportContainer/PreviewViewport/Player2DPreview") as Player2DController
 
 var class_icons: Dictionary = {
 	"necromancer": "NEC",
@@ -72,6 +73,12 @@ const AURA_OPTIONS := [
 	{"id": false, "label": "Desativada"}
 ]
 
+const OUTFIT_VARIANT_OPTIONS := [
+	{"id": "class_default", "label": "Classe"},
+	{"id": "dark", "label": "Sombria"},
+	{"id": "bright", "label": "Clara"}
+]
+
 var appearance: Dictionary = {}
 
 
@@ -86,7 +93,7 @@ func _ready() -> void:
 	var skills: Array = class_info.get("skills", [])
 
 	appearance = GameManager.get_default_appearance()
-	preview_icon.text = str(class_icons.get(GameManager.selected_class_id, "CLS"))
+	_update_pixel_preview()
 	class_name_label.text = str(class_info.get("display_name", "Classe"))
 	class_phrase_label.text = str(class_info.get("phrase", ""))
 	helper_label.text = "Máximo de 12 caracteres."
@@ -126,7 +133,23 @@ func _refresh_appearance_ui() -> void:
 	hair_style_value.text = _option_label(HAIR_STYLE_OPTIONS, appearance.get("hair_style", "short"))
 	hair_color_value.text = _option_label(HAIR_COLOR_OPTIONS, appearance.get("hair_color", "black"))
 	aura_value.text = _option_label(AURA_OPTIONS, appearance.get("aura_enabled", true))
-	preview_3d.apply_appearance(GameManager.selected_class_id, appearance)
+	outfit_variant_value.text = _option_label(OUTFIT_VARIANT_OPTIONS, appearance.get("outfit_variant", "class_default"))
+	_update_pixel_preview()
+
+
+func _update_pixel_preview() -> void:
+	var class_id: String = GameManager.selected_class_id
+	var icon: String = str(class_icons.get(class_id, "CLS"))
+	var body_type: String = _option_label(BODY_TYPE_OPTIONS, appearance.get("body_type", "masculine"))
+	var hair_color: String = _option_label(HAIR_COLOR_OPTIONS, appearance.get("hair_color", "black"))
+	preview_icon.text = "%s\n\nPixel Art 2D\n%s\nCabelo: %s" % [
+		icon,
+		body_type,
+		hair_color
+	]
+	if preview_player != null:
+		preview_player.apply_class_visual(class_id)
+		preview_player.apply_appearance_visuals(appearance)
 
 
 func _option_label(options: Array, value: Variant) -> String:
@@ -202,3 +225,11 @@ func _on_aura_prev_pressed() -> void:
 
 func _on_aura_next_pressed() -> void:
 	_cycle_option("aura_enabled", AURA_OPTIONS, 1)
+
+
+func _on_outfit_variant_prev_pressed() -> void:
+	_cycle_option("outfit_variant", OUTFIT_VARIANT_OPTIONS, -1)
+
+
+func _on_outfit_variant_next_pressed() -> void:
+	_cycle_option("outfit_variant", OUTFIT_VARIANT_OPTIONS, 1)

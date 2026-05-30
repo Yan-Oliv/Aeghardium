@@ -1,0 +1,28 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/2d/world/Interactable2D.gd" id="1"]
+
+[sub_resource type="RectangleShape2D" id="1"]
+size = Vector2(28, 22)
+
+[node name="Chest2D" type="Area2D"]
+collision_layer = 4
+collision_mask = 2
+script = ExtResource("1")
+interaction_label = "Abrir bau"
+interaction_type = "chest"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("1")
+
+[node name="Body" type="Polygon2D" parent="."]
+color = Color(0.42, 0.24, 0.10, 1)
+polygon = PackedVector2Array(-16, -8, 16, -8, 16, 12, -16, 12)
+
+[node name="Lid" type="Polygon2D" parent="."]
+color = Color(0.62, 0.36, 0.14, 1)
+polygon = PackedVector2Array(-16, -14, 16, -14, 16, -5, -16, -5)
+
+[node name="Lock" type="Polygon2D" parent="."]
+color = Color(0.95, 0.74, 0.22, 1)
+polygon = PackedVector2Array(-4, -4, 4, -4, 4, 5, -4, 5)

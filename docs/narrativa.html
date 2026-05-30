@@ -1,0 +1,743 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Noxxon Aeghardium – Bíblia Narrativa</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cinzel:wght@400;600&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap');
+
+  :root {
+    --gold: #C9A84C;
+    --gold-light: #E8C87A;
+    --gold-dark: #8B6914;
+    --deep: #080C14;
+    --panel: #0D1422;
+    --panel2: #111928;
+    --border: rgba(201,168,76,0.25);
+    --border-bright: rgba(201,168,76,0.6);
+    --red: #8B1A1A;
+    --red-light: #C0392B;
+    --purple: #3D1A6E;
+    --purple-light: #7B4FBF;
+    --green: #1A4A2E;
+    --green-light: #2ECC71;
+    --text: #D4C5A0;
+    --text-muted: #7A6E5A;
+    --white: #F0E8D5;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--deep);
+    color: var(--text);
+    font-family: 'EB Garamond', Georgia, serif;
+    font-size: 17px;
+    line-height: 1.8;
+    min-height: 100vh;
+  }
+
+  /* Grain overlay */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.5;
+  }
+
+  .wrapper { position: relative; z-index: 1; max-width: 900px; margin: 0 auto; padding: 60px 32px 120px; }
+
+  /* ── HERO ─────────────────────────────────────── */
+  .hero {
+    text-align: center;
+    padding: 80px 0 60px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 80px;
+  }
+
+  .hero-rune {
+    font-size: 11px;
+    letter-spacing: 6px;
+    color: var(--gold-dark);
+    text-transform: uppercase;
+    margin-bottom: 20px;
+    font-family: 'Cinzel', serif;
+  }
+
+  .hero-title {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: clamp(28px, 5vw, 52px);
+    font-weight: 700;
+    color: var(--gold-light);
+    line-height: 1.1;
+    letter-spacing: 2px;
+    margin-bottom: 12px;
+    text-shadow: 0 0 60px rgba(201,168,76,0.15);
+  }
+
+  .hero-sub {
+    font-family: 'Cinzel', serif;
+    font-size: 14px;
+    letter-spacing: 4px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    margin-bottom: 40px;
+  }
+
+  .hero-divider {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    margin: 0 auto;
+    max-width: 400px;
+  }
+  .hero-divider span { display: block; height: 1px; flex: 1; background: linear-gradient(to right, transparent, var(--gold-dark)); }
+  .hero-divider span:last-child { background: linear-gradient(to left, transparent, var(--gold-dark)); }
+  .hero-divider-gem {
+    width: 8px; height: 8px;
+    background: var(--gold);
+    transform: rotate(45deg);
+  }
+
+  .hero-tagline {
+    margin-top: 40px;
+    font-style: italic;
+    font-size: 20px;
+    color: var(--text-muted);
+    max-width: 520px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  /* ── SECTIONS ────────────────────────────────── */
+  .section { margin-bottom: 80px; }
+
+  .section-label {
+    font-family: 'Cinzel', serif;
+    font-size: 10px;
+    letter-spacing: 5px;
+    color: var(--gold-dark);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  .section-title {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: clamp(20px, 3vw, 30px);
+    color: var(--gold-light);
+    font-weight: 400;
+    margin-bottom: 32px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  p { margin-bottom: 16px; }
+
+  em { color: var(--gold-light); font-style: italic; }
+
+  strong { color: var(--white); font-weight: 500; }
+
+  /* ── QUOTE BLOCK ────────────────────────────── */
+  .quote {
+    border-left: 2px solid var(--gold-dark);
+    margin: 32px 0;
+    padding: 20px 28px;
+    background: rgba(201,168,76,0.04);
+    font-size: 18px;
+    font-style: italic;
+    color: var(--white);
+    line-height: 1.9;
+  }
+  .quote-attr {
+    margin-top: 10px;
+    font-size: 13px;
+    color: var(--text-muted);
+    font-style: normal;
+    font-family: 'Cinzel', serif;
+    letter-spacing: 2px;
+  }
+
+  /* ── LORE PANEL ─────────────────────────────── */
+  .lore-panel {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    padding: 32px 36px;
+    margin: 32px 0;
+    position: relative;
+  }
+  .lore-panel::before {
+    content: '';
+    position: absolute;
+    top: 6px; left: 6px; right: 6px; bottom: 6px;
+    border: 1px solid rgba(201,168,76,0.08);
+    pointer-events: none;
+  }
+  .lore-panel-title {
+    font-family: 'Cinzel', serif;
+    font-size: 12px;
+    letter-spacing: 3px;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+
+  /* ── FACTION GRID ────────────────────────────── */
+  .faction-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 20px;
+    margin-top: 24px;
+  }
+
+  .faction-card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    padding: 24px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .faction-card::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 3px;
+    height: 100%;
+  }
+
+  .faction-card.gold::after { background: var(--gold); }
+  .faction-card.red::after { background: var(--red-light); }
+  .faction-card.purple::after { background: var(--purple-light); }
+  .faction-card.green::after { background: var(--green-light); }
+  .faction-card.silver::after { background: #8A9BB0; }
+  .faction-card.dark::after { background: #2A2A3E; }
+
+  .faction-name {
+    font-family: 'Cinzel', serif;
+    font-size: 14px;
+    color: var(--gold-light);
+    margin-bottom: 6px;
+    letter-spacing: 1px;
+  }
+  .faction-epithet {
+    font-size: 12px;
+    color: var(--text-muted);
+    font-style: italic;
+    margin-bottom: 12px;
+    font-family: 'Cinzel', serif;
+    letter-spacing: 1px;
+  }
+  .faction-desc {
+    font-size: 15px;
+    line-height: 1.7;
+    color: var(--text);
+  }
+
+  /* ── CHARACTERS ─────────────────────────────── */
+  .char-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin-top: 24px;
+  }
+
+  @media (max-width: 600px) { .char-grid { grid-template-columns: 1fr; } }
+
+  .char-card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    padding: 24px;
+  }
+
+  .char-class {
+    font-family: 'Cinzel', serif;
+    font-size: 10px;
+    letter-spacing: 3px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+  .char-name {
+    font-family: 'Cinzel', serif;
+    font-size: 17px;
+    color: var(--gold-light);
+    margin-bottom: 10px;
+  }
+  .char-hook {
+    font-style: italic;
+    font-size: 14px;
+    color: var(--text-muted);
+    margin-bottom: 12px;
+    line-height: 1.5;
+  }
+  .char-body { font-size: 15px; line-height: 1.7; }
+
+  /* ── FLOORS TIMELINE ─────────────────────────── */
+  .floors { margin-top: 24px; }
+
+  .floor-arc {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 28px;
+    padding-bottom: 28px;
+    border-bottom: 1px solid rgba(201,168,76,0.1);
+  }
+  .floor-arc:last-child { border-bottom: none; }
+
+  .floor-num {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 28px;
+    color: var(--gold-dark);
+    min-width: 60px;
+    line-height: 1;
+    padding-top: 4px;
+  }
+
+  .floor-info {}
+  .floor-name {
+    font-family: 'Cinzel', serif;
+    font-size: 15px;
+    color: var(--gold-light);
+    margin-bottom: 4px;
+    letter-spacing: 1px;
+  }
+  .floor-biome {
+    font-size: 12px;
+    color: var(--text-muted);
+    font-style: italic;
+    margin-bottom: 10px;
+  }
+  .floor-desc { font-size: 15px; line-height: 1.7; }
+  .floor-boss {
+    margin-top: 8px;
+    font-size: 13px;
+    color: var(--red-light);
+    font-family: 'Cinzel', serif;
+    letter-spacing: 1px;
+  }
+
+  /* ── ROMANCE PANEL ───────────────────────────── */
+  .romance-banner {
+    border: 1px solid rgba(180, 80, 100, 0.4);
+    background: rgba(139, 26, 26, 0.08);
+    padding: 28px 32px;
+    margin: 32px 0;
+    position: relative;
+  }
+  .romance-banner-label {
+    font-family: 'Cinzel', serif;
+    font-size: 10px;
+    letter-spacing: 4px;
+    color: rgba(200, 100, 120, 0.8);
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+
+  /* ── WORLD RULES ─────────────────────────────── */
+  .rules-list { list-style: none; }
+  .rules-list li {
+    padding: 14px 0;
+    border-bottom: 1px solid rgba(201,168,76,0.08);
+    display: flex;
+    gap: 16px;
+    font-size: 16px;
+    line-height: 1.6;
+  }
+  .rules-list li::before {
+    content: '◆';
+    color: var(--gold-dark);
+    font-size: 10px;
+    margin-top: 6px;
+    flex-shrink: 0;
+  }
+
+  /* ── THEMES TABLE ────────────────────────────── */
+  .themes {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2px;
+    margin-top: 24px;
+    background: var(--border);
+  }
+  .theme-cell {
+    background: var(--panel);
+    padding: 20px 24px;
+  }
+  .theme-cell-title {
+    font-family: 'Cinzel', serif;
+    font-size: 12px;
+    letter-spacing: 2px;
+    color: var(--gold);
+    margin-bottom: 8px;
+    text-transform: uppercase;
+  }
+  .theme-cell-body { font-size: 15px; line-height: 1.7; color: var(--text-muted); }
+
+  @media (max-width: 600px) { .themes { grid-template-columns: 1fr; } }
+
+  /* ── FINAL SEAL ──────────────────────────────── */
+  .seal {
+    text-align: center;
+    margin-top: 80px;
+    padding-top: 60px;
+    border-top: 1px solid var(--border);
+  }
+  .seal-rune {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 11px;
+    letter-spacing: 5px;
+    color: var(--text-muted);
+    margin-bottom: 12px;
+  }
+  .seal-title {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 20px;
+    color: var(--gold-dark);
+  }
+</style>
+</head>
+<body>
+<div class="wrapper">
+
+  <!-- ══════════ HERO ══════════ -->
+  <div class="hero">
+    <div class="hero-rune">Bíblia Narrativa — Documento Confidencial</div>
+    <div class="hero-title">Noxxon Aeghardium</div>
+    <div class="hero-sub">O Labirinto que Devora o Mundo</div>
+    <div class="hero-divider">
+      <span></span><div class="hero-divider-gem"></div><span></span>
+    </div>
+    <div class="hero-tagline">"Você não foi escolhido para ser herói. Você foi escolhido porque era descartável."</div>
+  </div>
+
+  <!-- ══════════ I. PREMISSA ══════════ -->
+  <div class="section">
+    <div class="section-label">Capítulo I</div>
+    <div class="section-title">A Grande Queda & o Contrato do Sistema</div>
+
+    <p>Sete anos antes dos eventos do jogo, o mundo de <em>Aeghardium</em> era dividido entre impérios em guerra e uma magia antiga chamada de <strong>Fluxo</strong> — uma energia que permeia todas as coisas vivas, que sábios estudavam há milênios mas nunca dominaram completamente.</p>
+
+    <p>Então, sem aviso, o Fluxo entrou em colapso. Em um único dia — chamado de <strong>O Dia Sem Cor</strong> — toda magia ativa no mundo falhou simultaneamente. Torres caíram. Navios afundaram. Cicatrizações pararam no meio. A guerra que durava décadas cessou não por paz, mas porque nenhum dos dois lados conseguia mais erguer escudos mágicos.</p>
+
+    <p>No centro geográfico do continente, na cidade de <strong>Noxxon</strong>, o chão simplesmente... abriu. Uma fissura que não parava de crescer, iluminada por uma luz que não pertencia a nenhum espectro natural. Dali emergiu uma estrutura: a <strong>Torre Aeghardium</strong> — uma construção impossível, com andares que contradizem a física, paredes que mudam de material conforme você os observa, e uma profundidade que os primeiros exploradores descreveram como "olhar para dentro do próprio conceito de ausência".</p>
+
+    <div class="quote">
+      "A Torre não foi construída. Ela sempre esteve lá. Nós é que nunca fomos capazes de vê-la antes de estarmos prontos para entrar."
+      <div class="quote-attr">— Archimestra Lyren Voss, Crônicas do Primeiro Ano</div>
+    </div>
+
+    <p>Dois meses após o surgimento da Torre, algo mais aconteceu. Certas pessoas — sem padrão aparente de raça, classe social ou habilidade prévia — começaram a ouvir uma <strong>Voz</strong>. Não exatamente uma voz: uma sensação de reconhecimento, como quando você lembra uma palavra que estava na ponta da língua. O Sistema Nexus os havia <em>notado</em>.</p>
+
+    <div class="lore-panel">
+      <div class="lore-panel-title">O que é o Sistema Nexus</div>
+      <p>O Sistema Nexus é uma entidade de natureza desconhecida — nem deus, nem máquina, nem feitiço. Os acadêmicos debatem se ele <em>criou</em> a Torre Aeghardium ou se foi <em>criado por ela</em>. O que se sabe: ele estabelece contratos. Ele oferece a certas pessoas o poder de <strong>evoluir além dos limites naturais</strong> — ganhar força, resistência, habilidades que normais mortais não poderiam desenvolver — em troca de uma coisa: que elas entrem na Torre e continuem subindo.</p>
+      <p style="margin-bottom:0">Ninguém sabe o que acontece se alguém chegar ao andar 100. O Sistema nunca respondeu quando perguntado. Aqueles que tentaram abandonar o contrato após aceitá-lo simplesmente... pararam de evoluir. E a Voz nunca mais voltou.</p>
+    </div>
+
+    <p>O personagem jogável é um desses <strong>Escolhidos</strong>. Mas há algo diferente: enquanto outros Escolhidos acordaram com fragmentos de suas memórias intactas, o protagonista não tem absolutamente nada. Nem nome, nem rosto, nem história. Apenas a Voz do Sistema, um corpo que já sabe como lutar sem saber por quê, e uma estranha sensação de que já esteve dentro da Torre antes.</p>
+  </div>
+
+  <!-- ══════════ II. A VILA ══════════ -->
+  <div class="section">
+    <div class="section-label">Capítulo II</div>
+    <div class="section-title">Varthaven — A Vila que Cresceu por Acidente</div>
+
+    <p><strong>Varthaven</strong> não foi planejada. Ela surgiu porque os Escolhidos precisavam de um lugar para descansar entre as descidas, e logo comerciantes perceberam que onde há aventureiros desesperados, há dinheiro desesperado. Em dois anos, a pequena clareira perto da entrada da Torre se tornou uma vila caótica, leal a ninguém e a todos ao mesmo tempo.</p>
+
+    <p>Não há governo em Varthaven. Há <em>acordos</em>. O Conselho dos Três Selos — composto pelo comerciante mais rico, pelo Escolhido mais antigo ainda vivo e pelo médico que todos precisam — arbitra disputas de um jeito informal que funciona melhor do que qualquer monarquia nas proximidades.</p>
+
+    <div class="lore-panel">
+      <div class="lore-panel-title">A Regra de Ouro de Varthaven</div>
+      <p style="margin-bottom:0">Você pode vir de qualquer reino, servir a qualquer deus, e ter qualquer passado. Dentro de Varthaven, ninguém pergunta. Quando você ultrapassa os portões, deixa sua guerra do lado de fora. Quem quebra essa regra é simplesmente expulso — sem violência, sem julgamento. Varthaven não pune. Ela apenas fecha suas portas.</p>
+    </div>
+
+    <p>O terreno que o jogador adquire fica na <em>Borda Leste</em> — o lado menos valorizado, próximo à floresta de treinamento, longe da movimentação central. Todo comerciante que você contratar para construir sua base começou assim: esquecido na borda, esperando alguém apostar nele.</p>
+  </div>
+
+  <!-- ══════════ III. FACÇÕES ══════════ -->
+  <div class="section">
+    <div class="section-label">Capítulo III</div>
+    <div class="section-title">As Facções do Mundo</div>
+
+    <p>Aeghardium não é um mundo unificado. Cada facção tem razões próprias para querer que a Torre seja explorada — ou destruída. À medida que o jogador avança, essas relações mudam. Nenhuma facção é puramente vilã; todas têm lógica interna e personagens que o jogador pode aprender a respeitar, mesmo discordando.</p>
+
+    <div class="faction-grid">
+      <div class="faction-card gold">
+        <div class="faction-name">A Ordem do Selo Eterno</div>
+        <div class="faction-epithet">"O Sistema nos escolheu por uma razão."</div>
+        <div class="faction-desc">A maior organização de Escolhidos. Acreditam que o Sistema Nexus é divino e que chegar ao andar 100 é uma missão sagrada. Bem-organizados, bem-financiados. Úteis — mas com agenda própria que fica evidente nos andares intermediários.</div>
+      </div>
+
+      <div class="faction-card red">
+        <div class="faction-name">A Chama Livre</div>
+        <div class="faction-epithet">"Nenhum sistema nos define."</div>
+        <div class="faction-desc">Escolhidos que recusam a doutrina da Ordem. Acreditam que o Sistema Nexus é uma armadilha e que a Torre deve ser destruída por dentro. Caóticos, brilhantes, perigosos — e donos de informações que a Ordem preferiria que ninguém soubesse.</div>
+      </div>
+
+      <div class="faction-card purple">
+        <div class="faction-name">A Academia de Lyren</div>
+        <div class="faction-epithet">"Compreender antes de agir."</div>
+        <div class="faction-desc">Os acadêmicos da falecida Archimestra Voss. Não querem subir a Torre — querem <em>estudá-la</em>. Pagam bem por amostras, mapas e relatos de andares. A loja de equipamentos mais bem abastecida de Varthaven é deles.</div>
+      </div>
+
+      <div class="faction-card green">
+        <div class="faction-name">Os Filhos do Fluxo</div>
+        <div class="faction-epithet">"A Torre devolveu o que roubou."</div>
+        <div class="faction-desc">Druidas e guardiões da natureza que acreditam que o colapso do Fluxo foi causado pela Torre, e que ela deve ser fechada antes de corromper os últimos bolsões de magia natural. Aliados improváveis com conhecimento botânico inestimável.</div>
+      </div>
+
+      <div class="faction-card silver">
+        <div class="faction-name">A Guarda de Ferro</div>
+        <div class="faction-epithet">"Proteger os que ficam."</div>
+        <div class="faction-desc">Soldados e ex-guerreiros que não são Escolhidos, mas protegem Varthaven dos monstros que escapam da Torre. Desconfiam de Escolhidos — mas respeitam ação concreta. Fonte de contratos de combate e informações sobre a área externa.</div>
+      </div>
+
+      <div class="faction-card dark">
+        <div class="faction-name">Os Sem-Nome</div>
+        <div class="faction-epithet">"Você nos conhece. Você ainda não sabe."</div>
+        <div class="faction-desc">Uma facção misteriosa que o jogador só descobre existir por volta do andar 30. Seus membros não revelam afiliação. Aparecem em momentos críticos e sempre sabem demais sobre o protagonista — especialmente sobre o que ele esqueceu.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════ IV. PERSONAGENS ══════════ -->
+  <div class="section">
+    <div class="section-label">Capítulo IV</div>
+    <div class="section-title">Personagens Centrais da Narrativa</div>
+
+    <p>Esses são os NPCs que orbitam o protagonista ao longo da jornada. Cada um começa como um arquétipo familiar — e vai revelando camadas que subvertem essa expectativa.</p>
+
+    <div class="char-grid">
+      <div class="char-card">
+        <div class="char-class">Aliado — Clérigo</div>
+        <div class="char-name">Ser Aldric Mourne</div>
+        <div class="char-hook">"Eu curei mil feridas. A sua eu não consigo parar de olhar."</div>
+        <div class="char-body">Um clérigo de meia-idade que perdeu a fé quando o Dia Sem Cor silenciou seu deus. Continua curando porque é tudo que sabe fazer — não por convicção, mas por hábito. Cínico, preciso com palavras, e o único NPC que trata o protagonista como adulto desde o início. Guarda um segredo sobre o andar 7 que só revela quando confia plenamente.</div>
+      </div>
+
+      <div class="char-card">
+        <div class="char-class">Aliada — Arqueira</div>
+        <div class="char-name">Kira Vael</div>
+        <div class="char-hook">"Não me salve. Mas se for salvar, faça direito."</div>
+        <div class="char-body">A Escolhida mais antiga ainda ativa na Torre — já chegou ao andar 23 e voltou deliberadamente, sem explicar por quê. Fria, competente, e irritantemente correta na maioria das análises. Tem uma relação complicada com a Chama Livre, da qual foi fundadora. Sua verdade sobre os andares superiores é o motor do segundo ato.</div>
+      </div>
+
+      <div class="char-card">
+        <div class="char-class">Comerciante — Forjador</div>
+        <div class="char-name">Durn Ashfeld</div>
+        <div class="char-hook">"Toda arma tem uma história. A sua ainda não decidiu qual é."</div>
+        <div class="char-body">Um anão que afirma ter forjado as correntes que prendem a entrada da Torre no Dia Um. Provavelmente mentindo — mas sua forja produz coisas que nenhum outro artesão consegue replicar. Expande seu repertório conforme o jogador avança de Rank, e revela técnicas que sugerem conhecimento de dentro da Torre.</div>
+      </div>
+
+      <div class="char-card">
+        <div class="char-class">Misterioso — Sem Classe</div>
+        <div class="char-name">A Menina do Andar Zero</div>
+        <div class="char-hook">"Você esteve aqui antes. Quer que eu mostre onde você parou?"</div>
+        <div class="char-body">Uma criança que aparece na entrada da Torre, sempre que o jogador está prestes a tomar uma decisão narrativa importante. Não ataca, não foge, não explica. Conhece o nome verdadeiro do protagonista — aquele que ele esqueceu — e usa fragmentos dele como isca. A resposta sobre quem ela é está no andar 100.</div>
+      </div>
+
+      <div class="char-card">
+        <div class="char-class">Antagonista Inicial — Paladino</div>
+        <div class="char-name">Comandante Serath Holt</div>
+        <div class="char-hook">"O Sistema escolheu você. Isso não significa que você merece."</div>
+        <div class="char-body">Líder da ala militar da Ordem do Selo Eterno. Acredita genuinamente em sua missão — e é exatamente isso que o torna perigoso. Não é cruel por prazer: é eficiente por convicção. Passa de obstáculo a aliado relutante por volta do andar 15, quando descobrem que têm um inimigo em comum que nenhum deles havia percebido.</div>
+      </div>
+
+      <div class="char-card">
+        <div class="char-class">Aliado — Druida</div>
+        <div class="char-name">Thaela do Bosque Cinzento</div>
+        <div class="char-hook">"As plantas me dizem coisas. Sobre você, elas ficam quietas. Isso me preocupa."</div>
+        <div class="char-body">Uma druida que cuida dos jardins de Varthaven e resiste à ideia de que qualquer Escolhido é confiável. Muda de posição gradualmente conforme o protagonista demonstra respeito pelo que ela protege. Possui acesso a lore sobre o período antes do Dia Sem Cor que nenhuma outra fonte menciona.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════ V. ARCOS DA TORRE ══════════ -->
+  <div class="section">
+    <div class="section-label">Capítulo V</div>
+    <div class="section-title">Os Arcos Narrativos da Torre</div>
+
+    <p>A Torre Aeghardium não é apenas uma sequência de combates — cada agrupamento de andares revela uma camada nova sobre o que aconteceu antes do jogo começar. O jogador pode ignorar completamente a narrativa e focar em progressão mecânica, ou mergulhar nos fragmentos e montar o quebra-cabeça.</p>
+
+    <div class="floors">
+
+      <div class="floor-arc">
+        <div class="floor-num">01–10</div>
+        <div class="floor-info">
+          <div class="floor-name">Arco da Origem — "O que Você Era"</div>
+          <div class="floor-biome">Floresta Corrompida · Cavernas de Cristal · Ruínas da Primeira Guerra</div>
+          <div class="floor-desc">Os primeiros andares parecem um tutorial — mas cada sala tem inscrições em uma língua que o protagonista reconhece sem ter aprendido. Fragmentos de memória surgem como visões rápidas ao derrotar bosses. O andar 5 revela a primeira grande questão: o protagonista não foi escolhido aleatoriamente. Alguém o indicou. O andar 10 revela quem — e a resposta complica tudo o que veio antes.</div>
+          <div class="floor-boss">Boss Andar 10: O Eco — uma cópia do protagonista usando habilidades que ele ainda não aprendeu</div>
+        </div>
+      </div>
+
+      <div class="floor-arc">
+        <div class="floor-num">11–20</div>
+        <div class="floor-info">
+          <div class="floor-name">Arco da Fratura — "O que o Mundo Perdeu"</div>
+          <div class="floor-biome">Cidade Afundada · Templo Aquático · Biblioteca Corrompida</div>
+          <div class="floor-desc">Os andares médios mostram cidades inteiras que foram <em>engolidas</em> pela Torre antes dela emergir — comunidades preservadas em âmbar temporal, cujos habitantes ainda vivem em loop, repetindo seus últimos momentos. O protagonista pode interagir com eles, ouvir suas histórias, e perceber que Varthaven foi construída sobre os escombros de algo que já existia ali. A Chama Livre usa esses andares como argumento central: a Torre não surgiu — ela sempre esteve aqui, esperando.</div>
+          <div class="floor-boss">Boss Andar 20: O Guardião de Memória — absorve as formas dos aldeões engolidos</div>
+        </div>
+      </div>
+
+      <div class="floor-arc">
+        <div class="floor-num">21–30</div>
+        <div class="floor-info">
+          <div class="floor-name">Arco da Escolha — "O que Você Decide Ser"</div>
+          <div class="floor-biome">Castelo Flutuante · Campos de Batalha Congelados · Sala dos Contratos</div>
+          <div class="floor-desc">O andar 25 muda as regras: o Sistema Nexus fala diretamente pela primeira vez. Não como comando — como oferta. Ele revela que o protagonista pode <em>reescrever</em> os termos do contrato, mas a cada mudança, algo do mundo exterior é alterado. Fações de Varthaven começam a notar que decisões do protagonista dentro da Torre têm consequências lá fora. É aqui que as relações com as facções se tornam mecânicas com peso narrativo real.</div>
+          <div class="floor-boss">Boss Andar 30: Serath Holt transformado — ou aliado poderoso, dependendo das escolhas</div>
+        </div>
+      </div>
+
+      <div class="floor-arc">
+        <div class="floor-num">31–60</div>
+        <div class="floor-info">
+          <div class="floor-name">Arco do Abismo — "O que Você Teme"</div>
+          <div class="floor-biome">Dimensão Invertida · Mar de Sombras · Espelho do Tempo</div>
+          <div class="floor-desc">Os andares intermediários são o coração da Tower como metáfora: eles refletem o medo do protagonista de descobrir sua verdadeira identidade. Cada Boss usa táticas que o protagonista usou nas primeiras batalhas — como se a Torre estivesse aprendendo. Os Sem-Nome tornam-se ativos aqui, interferindo tanto para ajudar quanto para prejudicar, sempre com uma agenda que não fica clara até o andar 55.</div>
+          <div class="floor-boss">Boss Andar 50: A Menina do Andar Zero em forma de combate — batalha opcional com consequências permanentes</div>
+        </div>
+      </div>
+
+      <div class="floor-arc">
+        <div class="floor-num">61–99</div>
+        <div class="floor-info">
+          <div class="floor-name">Arco da Verdade — "Por que a Torre Existe"</div>
+          <div class="floor-biome">Coração do Nexus · Vazio Estruturado · O Último Andar</div>
+          <div class="floor-desc">A revelação central: a Torre Aeghardium é uma <strong>prisão</strong>. Não para monstros. Para uma ideia. Antes do Dia Sem Cor, um grupo de magos — os ancestrais dos Sem-Nome — tentou criar um ser capaz de carregar todo o Fluxo do mundo dentro de si. O experimento deu errado de uma forma que eles nunca previram: o ser emergiu, e não queria ser controlado. A Torre foi erguida para contê-lo. O Sistema Nexus foi criado para recrutar executores. O protagonista não foi escolhido para liberar o ser — foi escolhido para ser a <em>última fechadura</em>.</div>
+          <div class="floor-boss">Boss Andar 99: Kira Vael — que desceu para impedir o protagonista de chegar ao final</div>
+        </div>
+      </div>
+
+      <div class="floor-arc">
+        <div class="floor-num">100</div>
+        <div class="floor-info">
+          <div class="floor-name">O Último Contrato</div>
+          <div class="floor-biome">A Câmara Sem Nome</div>
+          <div class="floor-desc">O andar 100 não tem inimigos aleatórios. Tem apenas o ser — <strong>Aeghardium</strong>, entidade que deu nome ao mundo sem que ninguém soubesse que havia sido assim. E tem o Sistema Nexus, que finalmente explica os termos completos do contrato. O protagonista tem três escolhas reais, cada uma com fim diferente, nenhuma claramente "certa". Após os créditos, um novo ciclo começa — com o protagonista mantendo memórias fragmentadas e o mundo ligeiramente alterado, dependendo da escolha feita.</div>
+          <div class="floor-boss">Boss Final: Aeghardium — Rank SS — IA adaptativa baseada nos três arcos anteriores</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══════════ VI. ROMANCE ══════════ -->
+  <div class="section">
+    <div class="section-label">Capítulo VI</div>
+    <div class="section-title">O Elemento Romântico — Conteúdo Opcional</div>
+
+    <div class="romance-banner">
+      <div class="romance-banner-label">Conteúdo de DLC / Progressão Opcional</div>
+      <p>O romance em Noxxon Aeghardium existe como uma <em>subcorrente</em> — presente, mas nunca forçada. O jogador pode completar o jogo inteiro sem se envolver em nenhum arco romântico. Ele é desbloqueado por afinidade gradual, não por escolhas de diálogo "óbvias".</p>
+    </div>
+
+    <p>Existem dois arcos românticos possíveis no jogo principal, e dois adicionais reservados para expansão futura:</p>
+
+    <ul class="rules-list">
+      <li>
+        <div>
+          <strong>Kira Vael (Arco Principal):</strong> O romance com Kira é o mais lento e mais complicado — ela ativamente resiste a qualquer aproximação por razões que só fazem sentido quando você descobre o que ela está escondendo sobre o andar 23. A DLC <em>"O Andar que Ela Nunca Contou"</em> expande essa história com três sessões jogáveis do ponto de vista dela.
+        </div>
+      </li>
+      <li>
+        <div>
+          <strong>Ser Aldric Mourne (Arco Alternativo):</strong> Uma conexão diferente — não romântica no sentido convencional, mas uma intimidade profunda que o jogo chama de "vínculo de âncora". Aldric é o único NPC que o protagonista pode contar qualquer verdade e receber apenas "e daí?". Para alguns jogadores, esse será o relacionamento mais significativo do jogo.
+        </div>
+      </li>
+      <li>
+        <div>
+          <strong>DLC "Chamas de Varthaven":</strong> Conteúdo exclusivo de pós-jogo com novos personagens românticos, ambientado nos seis meses após o evento do andar 100. Tom mais leve, mais focado em reconstrução do que em conflito.
+        </div>
+      </li>
+    </ul>
+
+    <p>A regra de ouro do elemento romântico em Noxxon Aeghardium: <em>o relacionamento nunca salva o mundo. As pessoas que você ama podem te motivar — mas a batalha final é sempre sua, e sua sozinha.</em></p>
+  </div>
+
+  <!-- ══════════ VII. LEIS DO MUNDO ══════════ -->
+  <div class="section">
+    <div class="section-label">Capítulo VII</div>
+    <div class="section-title">As Leis Invisíveis do Universo</div>
+
+    <p>Estas são as regras internas do mundo — não mecânicas de jogo, mas verdades que o universo respeita e que a narrativa nunca viola. Elas existem para manter a coerência e para guiar futuras expansões.</p>
+
+    <ul class="rules-list">
+      <li>O Sistema Nexus nunca mente. Ele omite, distorce contexto, e escolhe cuidadosamente o que revelar. Mas toda afirmação direta que faz é verdadeira.</li>
+      <li>A Torre Aeghardium não é mágica — é física de um tipo que Aeghardium não tem linguagem para descrever. O Fluxo é o elo entre as duas realidades.</li>
+      <li>Nenhum Escolhido pode matar outro Escolhido dentro da Torre. O Sistema Nexus desfaz isso. Fora da Torre, não há proteção.</li>
+      <li>Monstros da Torre são manifestações do ser aprisionado — cada um é uma emoção ou memória dele, exteriorizada como forma física. Derrotá-los enfraquece a prisão, não o ser.</li>
+      <li>O Fluxo foi suspendido, não destruído. Ele voltará — mas diferente. O que vem depois do andar 100 é a primeira vez que o mundo precisará descobrir o que fazer com magia que mudou de natureza.</li>
+      <li>Varthaven é imune aos efeitos da Torre porque foi construída sobre a pedra que a contém. Seus fundadores sabiam disso. A maioria dos moradores não sabe que sabe.</li>
+      <li>Todo Boss da Torre foi humano. Nem sempre reconhecivelmente — mas há sempre um fragmento.</li>
+    </ul>
+  </div>
+
+  <!-- ══════════ VIII. TEMAS ══════════ -->
+  <div class="section">
+    <div class="section-label">Capítulo VIII</div>
+    <div class="section-title">Temas Centrais</div>
+
+    <div class="themes">
+      <div class="theme-cell">
+        <div class="theme-cell-title">Identidade sem memória</div>
+        <div class="theme-cell-body">Quem você é quando não tem passado? O protagonista constrói identidade por escolhas, não por história. Inspirado na pergunta central de Re:Zero: você tem valor sem suas conquistas anteriores?</div>
+      </div>
+      <div class="theme-cell">
+        <div class="theme-cell-title">Poder como responsabilidade</div>
+        <div class="theme-cell-body">O Sistema dá força, mas cada ganho de poder tem peso narrativo. Inspirado no Spider-Man: não existe "nível alto com zero consequência" — cada avanço muda algo no mundo.</div>
+      </div>
+      <div class="theme-cell">
+        <div class="theme-cell-title">Sistemas que usam pessoas</div>
+        <div class="theme-cell-body">O Sistema Nexus, as facções, as estruturas de poder — todos usam os Escolhidos como peças. O jogo questiona quando colaborar com o sistema e quando quebrá-lo, sem dar resposta fácil.</div>
+      </div>
+      <div class="theme-cell">
+        <div class="theme-cell-title">A progressão como narrativa</div>
+        <div class="theme-cell-body">Subir de Rank não é só mecânica — é o protagonista tornando-se quem sempre foi potencialmente. Inspirado em Solo Leveling: a evolução tem peso dramático, não é só número.</div>
+      </div>
+      <div class="theme-cell">
+        <div class="theme-cell-title">Mundos que sobrevivem ao herói</div>
+        <div class="theme-cell-body">Varthaven existe independentemente do protagonista. As facções têm agendas próprias. O mundo não gira em torno de uma pessoa — em vez disso, Elden Ring: você chega a um lugar com história, e escolhe seu papel nela.</div>
+      </div>
+      <div class="theme-cell">
+        <div class="theme-cell-title">Magia como linguagem esquecida</div>
+        <div class="theme-cell-body">O Fluxo não é ferramenta — é comunicação. O colapso do Dia Sem Cor foi um silêncio forçado, não uma destruição. Recuperar a magia é, metaforicamente, recuperar a capacidade de se expressar.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════ IX. LIBERDADE ══════════ -->
+  <div class="section">
+    <div class="section-label">Capítulo IX</div>
+    <div class="section-title">A Filosofia de Design — História Sem Prisão</div>
+
+    <p>Noxxon Aeghardium é um jogo com história — mas não é um jogo <em>sobre</em> história. A narrativa existe como <strong>recompensa opcional</strong> para quem quer se aprofundar, não como pré-requisito para quem quer apenas jogar.</p>
+
+    <div class="lore-panel">
+      <div class="lore-panel-title">O Princípio dos Três Jogadores</div>
+      <p><strong>O Explorador</strong> quer subir andares, farmar drops raros, maximizar atributos e personalizar sua base até que ela pareça uma obra de arte. Para ele, a história é decoração agradável — presente, mas nunca no caminho.</p>
+      <p><strong>O Mergulhador</strong> para em toda sala, lê todas as inscrições, fala com todos os NPCs duas vezes. Ele monta o quebra-cabeça da narrativa como passatempo paralelo e percebe detalhes que outros nem notaram.</p>
+      <p style="margin-bottom:0"><strong>O Competidor</strong> quer o Rank mais alto, o equipamento mais raro, e completar andares de formas que outros não tentaram. Para ele, a história é contexto que torna a vitória significativa — mas não é a vitória em si.</p>
+    </div>
+
+    <p>Os três tipos de jogador devem poder completar o jogo base inteiro sem nunca sentir que estão sendo forçados para fora de sua zona de conforto. A narrativa se oferece; nunca se impõe.</p>
+
+    <p>A base personalizável, o sistema de Rank, o farming de andares externos, e a progressão de habilidades existem para sustentar infinitas horas de jogo mesmo que o jogador já saiba todos os segredos da história. <em>Essa é a diferença entre um jogo com história e um jogo que se esgota quando a história acaba.</em></p>
+  </div>
+
+  <!-- ══════════ SEAL ══════════ -->
+  <div class="seal">
+    <div class="seal-rune">Documento Interno — Noxxon Aeghardium</div>
+    <div class="seal-title">Bíblia Narrativa v1.0</div>
+  </div>
+
+</div>
+</body>
+</html>

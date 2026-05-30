@@ -1,7 +1,7 @@
 [gd_scene load_steps=3 format=3]
 
 [ext_resource type="Script" path="res://scripts/ui/CharacterCreationController.gd" id="1"]
-[ext_resource type="PackedScene" path="res://scenes/characters/CharacterPreview3D.tscn" id="2"]
+[ext_resource type="PackedScene" path="res://scenes/2d/player/Player2D.tscn" id="2"]
 
 [node name="CharacterCreationScreen" type="Control"]
 layout_mode = 3
@@ -112,13 +112,15 @@ handle_input_locally = false
 size = Vector2i(420, 420)
 render_target_update_mode = 4
 
-[node name="CharacterPreview3D" parent="MarginContainer/PanelContainer/OuterVBox/ScrollContainer/VBoxContainer/TopRow/PreviewPanel/PreviewVBox/PreviewViewportContainer/PreviewViewport" instance=ExtResource("2")]
+[node name="Player2DPreview" parent="MarginContainer/PanelContainer/OuterVBox/ScrollContainer/VBoxContainer/TopRow/PreviewPanel/PreviewVBox/PreviewViewportContainer/PreviewViewport" instance=ExtResource("2")]
 
 [node name="IconLabel" type="Label" parent="MarginContainer/PanelContainer/OuterVBox/ScrollContainer/VBoxContainer/TopRow/PreviewPanel/PreviewVBox"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 16
-text = "SWD"
+theme_override_font_sizes/font_size = 24
+text = "SWD
+Pixel Preview"
 horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="InfoColumn" type="VBoxContainer" parent="MarginContainer/PanelContainer/OuterVBox/ScrollContainer/VBoxContainer/TopRow"]
 layout_mode = 2
@@ -303,6 +305,29 @@ text = "Ativa"
 layout_mode = 2
 text = ">"
 
+[node name="OutfitVariantRow" type="HBoxContainer" parent="MarginContainer/PanelContainer/OuterVBox/ScrollContainer/VBoxContainer/AppearancePanel/AppearanceVBox"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="Label" type="Label" parent="MarginContainer/PanelContainer/OuterVBox/ScrollContainer/VBoxContainer/AppearancePanel/AppearanceVBox/OutfitVariantRow"]
+layout_mode = 2
+custom_minimum_size = Vector2(130, 0)
+text = "Roupa base"
+
+[node name="PrevButton" type="Button" parent="MarginContainer/PanelContainer/OuterVBox/ScrollContainer/VBoxContainer/AppearancePanel/AppearanceVBox/OutfitVariantRow"]
+layout_mode = 2
+text = "<"
+
+[node name="ValueLabel" type="Label" parent="MarginContainer/PanelContainer/OuterVBox/ScrollContainer/VBoxContainer/AppearancePanel/AppearanceVBox/OutfitVariantRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+horizontal_alignment = 1
+text = "Classe"
+
+[node name="NextButton" type="Button" parent="MarginContainer/PanelContainer/OuterVBox/ScrollContainer/VBoxContainer/AppearancePanel/AppearanceVBox/OutfitVariantRow"]
+layout_mode = 2
+text = ">"
+
 [node name="Buttons" type="HBoxContainer" parent="MarginContainer/PanelContainer/OuterVBox"]
 layout_mode = 2
 theme_override_constants/separation = 12
@@ -328,6 +353,8 @@ text = "Iniciar Jornada"
 [connection signal="pressed" from="MarginContainer/PanelContainer/OuterVBox/ScrollContainer/VBoxContainer/AppearancePanel/AppearanceVBox/HairColorRow/PrevButton" to="." method="_on_hair_color_prev_pressed"]
 [connection signal="pressed" from="MarginContainer/PanelContainer/OuterVBox/ScrollContainer/VBoxContainer/AppearancePanel/AppearanceVBox/HairStyleRow/NextButton" to="." method="_on_hair_style_next_pressed"]
 [connection signal="pressed" from="MarginContainer/PanelContainer/OuterVBox/ScrollContainer/VBoxContainer/AppearancePanel/AppearanceVBox/HairStyleRow/PrevButton" to="." method="_on_hair_style_prev_pressed"]
+[connection signal="pressed" from="MarginContainer/PanelContainer/OuterVBox/ScrollContainer/VBoxContainer/AppearancePanel/AppearanceVBox/OutfitVariantRow/NextButton" to="." method="_on_outfit_variant_next_pressed"]
+[connection signal="pressed" from="MarginContainer/PanelContainer/OuterVBox/ScrollContainer/VBoxContainer/AppearancePanel/AppearanceVBox/OutfitVariantRow/PrevButton" to="." method="_on_outfit_variant_prev_pressed"]
 [connection signal="pressed" from="MarginContainer/PanelContainer/OuterVBox/ScrollContainer/VBoxContainer/AppearancePanel/AppearanceVBox/SkinToneRow/NextButton" to="." method="_on_skin_tone_next_pressed"]
 [connection signal="pressed" from="MarginContainer/PanelContainer/OuterVBox/ScrollContainer/VBoxContainer/AppearancePanel/AppearanceVBox/SkinToneRow/PrevButton" to="." method="_on_skin_tone_prev_pressed"]
 [connection signal="pressed" from="MarginContainer/PanelContainer/OuterVBox/Buttons/StartButton" to="." method="_on_start_button_pressed"]
