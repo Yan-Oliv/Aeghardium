@@ -1,5 +1,9 @@
 # Noxxon Aeghardium
 
+![Godot 4.2](https://img.shields.io/badge/Godot%204.2-478CBF?style=flat-square&logo=godotengine&logoColor=white) ![GDScript](https://img.shields.io/badge/GDScript-355570?style=flat-square) ![Android](https://img.shields.io/badge/Android-3DDC84?style=flat-square&logo=android&logoColor=white) ![Projeto pessoal](https://img.shields.io/badge/Projeto%20pessoal-6b7280?style=flat-square)
+
+> RPG de turnos offline, feito por diversão e aprendizado em Godot.
+
 MVP offline em Godot 4.2+ com fluxo principal fechado para teste local e preparo de APK debug Android.
 
 ## Nome oficial
@@ -90,3 +94,8 @@ Se quiser trocar depois:
 
 1. Substituir o arquivo por um ícone final.
 2. Ajustar os ícones do preset Android no editor, se necessário.
+
+---
+
+<sub>Desenvolvido por <a href="https://github.com/Yan-Oliv">Yan Monteiro</a> · <a href="https://www.linkedin.com/in/yan-de-oliveira-gon%C3%A7alves-monteiro-a2886619a/">LinkedIn</a> · <a href="https://github.com/OmnyaTech">OmnyaTech</a></sub>
+
